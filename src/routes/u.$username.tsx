@@ -18,12 +18,12 @@ export const Route = createFileRoute("/u/$username")({
 
 function Profile() {
   const { username } = Route.useParams();
-  const { users, posts, me, logout } = useStore();
+  const { users, posts, me, ready, logout } = useStore();
   const nav = useNavigate();
   const user = users.find((u) => u.username === username);
   const mine = posts.filter((p) => p.author === username);
 
-  if (!user) return <Shell title="Profile"><p className="p-6 text-center text-muted-foreground">User not found.</p></Shell>;
+  if (!user) return <Shell title="Profile"><p className="p-6 text-center text-muted-foreground">{ready ? "User not found." : "Loading…"}</p></Shell>;
 
   return (
     <Shell title="Profile">
@@ -32,7 +32,7 @@ function Profile() {
         <div className="flex items-end justify-between">
           <div className="rounded-full border-4 border-card"><Avatar user={user} size={80} /></div>
           {me?.username === username && (
-            <button onClick={() => { logout(); nav({ to: "/" }); }} className="rounded-full border px-4 py-1.5 text-sm font-semibold">Log out</button>
+            <button onClick={async () => { await logout(); nav({ to: "/", replace: true }); }} className="rounded-full border px-4 py-1.5 text-sm font-semibold">Log out</button>
           )}
         </div>
         <h1 className="mt-2 text-xl font-bold">{user.name}</h1>

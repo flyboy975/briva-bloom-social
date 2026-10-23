@@ -1,6 +1,7 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
-export type User = { username: string; name: string; bio: string; avatarColor: string };
+export type User = { id: string; username: string; name: string; bio: string; avatarColor: string };
 export type Comment = { id: string; author: string; text: string };
 export type Post = {
   id: string;
@@ -12,80 +13,117 @@ export type Post = {
   comments: Comment[];
 };
 
-const now = Date.now();
-const seedUsers: User[] = [
-  { username: "amani", name: "Amani Otieno", bio: "Coffee, code and sunsets ☕", avatarColor: "oklch(0.62 0.17 255)" },
-  { username: "lina", name: "Lina Park", bio: "Photographer. Trail runner.", avatarColor: "oklch(0.66 0.15 200)" },
-  { username: "diego", name: "Diego Ruiz", bio: "Cooking my way around the world.", avatarColor: "oklch(0.58 0.14 280)" },
-];
-const seedPosts: Post[] = [
-  { id: "p1", author: "lina", text: "Morning run by the lake. The fog was unreal today 🌫️", image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=900", createdAt: now - 1000 * 60 * 25, likes: ["amani"], comments: [{ id: "c1", author: "amani", text: "Wow, stunning!" }] },
-  { id: "p2", author: "diego", text: "Homemade tacos night. Recipe in the comments if anyone wants it 🌮", createdAt: now - 1000 * 60 * 60 * 3, likes: ["lina", "amani"], comments: [] },
-  { id: "p3", author: "amani", text: "Just joined Briva — hello everyone! 👋", createdAt: now - 1000 * 60 * 60 * 20, likes: [], comments: [{ id: "c2", author: "lina", text: "Welcome!" }] },
-];
-
 type Ctx = {
   users: User[];
   posts: Post[];
   me: User | null;
-  signup: (u: { name: string; username: string }) => string | null;
-  login: (username: string) => string | null;
-  logout: () => void;
-  addPost: (text: string, image?: string | undefined) => void;
-  toggleLike: (id: string) => void;
-  addComment: (id: string, text: string) => void;
+  ready: boolean;
+  signup: (u: { name: string; username: string; email: string; password: string }) => Promise<string | null>;
+  login: (email: string, password: string) => Promise<string | null>;
+  logout: () => Promise<void>;
+  addPost: (text: string, image?: File | undefined) => Promise<string | null>;
+  toggleLike: (id: string) => Promise<void>;
+  addComment: (id: string, text: string) => Promise<void>;
 };
 
 const StoreCtx = createContext<Ctx | null>(null);
-const KEY = "briva-state-v1";
+const BUCKET = "post-images";
 
 export function StoreProvider({ children }: { children: ReactNode }) {
-  const [users, setUsers] = useState(seedUsers);
-  const [posts, setPosts] = useState(seedPosts);
-  const [meName, setMeName] = useState<string | null>(null);
-  const [loaded, setLoaded] = useState(false);
+  const [users, setUsers] = useState<User[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [meId, setMeId] = useState<string | null>(null);
+  const [ready, setReady] = useState(false);
 
-  useEffect(() => {
-    try {
-      const s = JSON.parse(localStorage.getItem(KEY) || "null");
-      if (s) { setUsers(s.users); setPosts(s.posts); setMeName(s.meName); }
-    } catch {}
-    setLoaded(true);
+  const load = useCallback(async () => {
+    const [pr, po, li, co] = await Promise.all([
+      supabase.from("profiles").select("*"),
+      supabase.from("posts").select("*").order("created_at", { ascending: false }).limit(200),
+      supabase.from("post_likes").select("post_id,user_id"),
+      supabase.from("comments").select("*").order("created_at"),
+    ]);
+    const us: User[] = (pr.data ?? []).map((p) => ({ id: p.id, username: p.username, name: p.name, bio: p.bio, avatarColor: p.avatar_color }));
+    const byId = new Map(us.map((u) => [u.id, u.username]));
+    const paths = (po.data ?? []).map((p) => p.image_url).filter((u): u is string => !!u && !u.startsWith("http"));
+    const signed = new Map<string, string>();
+    if (paths.length) {
+      const { data } = await supabase.storage.from(BUCKET).createSignedUrls(paths, 60 * 60 * 24);
+      data?.forEach((d) => { if (d.path && d.signedUrl) signed.set(d.path, d.signedUrl); });
+    }
+    setUsers(us);
+    setPosts((po.data ?? []).map((p) => ({
+      id: p.id,
+      author: byId.get(p.author_id) ?? "unknown",
+      text: p.text,
+      image: p.image_url ? (p.image_url.startsWith("http") ? p.image_url : signed.get(p.image_url)) : undefined,
+      createdAt: new Date(p.created_at).getTime(),
+      likes: (li.data ?? []).filter((l) => l.post_id === p.id).map((l) => byId.get(l.user_id) ?? ""),
+      comments: (co.data ?? []).filter((c) => c.post_id === p.id).map((c) => ({ id: c.id, author: byId.get(c.author_id) ?? "unknown", text: c.text })),
+    })));
   }, []);
-  useEffect(() => {
-    if (!loaded) return;
-    try { localStorage.setItem(KEY, JSON.stringify({ users, posts, meName })); } catch { console.warn("Briva: browser storage full, latest change not saved"); }
-  }, [users, posts, meName, loaded]);
 
-  const me = users.find((u) => u.username === meName) ?? null;
+  useEffect(() => {
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      setMeId(session?.user.id ?? null);
+      if (event === "SIGNED_IN" || event === "USER_UPDATED") void load();
+    });
+    supabase.auth.getUser().then(({ data }) => setMeId(data.user?.id ?? null));
+    load().finally(() => setReady(true));
+    const channel = supabase
+      .channel(`briva-${Math.random().toString(36).slice(2)}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "posts" }, () => void load())
+      .on("postgres_changes", { event: "*", schema: "public", table: "post_likes" }, () => void load())
+      .on("postgres_changes", { event: "*", schema: "public", table: "comments" }, () => void load())
+      .subscribe();
+    return () => { sub.subscription.unsubscribe(); supabase.removeChannel(channel); };
+  }, [load]);
+
+  const me = users.find((u) => u.id === meId) ?? null;
+
   const value: Ctx = {
-    users, posts, me,
-    signup: ({ name, username }) => {
+    users, posts, me, ready,
+    signup: async ({ name, username, email, password }) => {
       const un = username.trim().toLowerCase();
       if (!/^[a-z0-9_]{3,20}$/.test(un)) return "Username: 3–20 letters, numbers or _";
       if (users.some((u) => u.username === un)) return "That username is taken";
-      setUsers([...users, { username: un, name: name.trim() || un, bio: "New to Briva", avatarColor: "oklch(0.6 0.16 245)" }]);
-      setMeName(un);
+      const { error } = await supabase.auth.signUp({
+        email: email.trim(), password,
+        options: { emailRedirectTo: window.location.origin, data: { username: un, name: name.trim() } },
+      });
+      return error ? error.message : null;
+    },
+    login: async (email, password) => {
+      const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+      return error ? error.message : null;
+    },
+    logout: async () => { await supabase.auth.signOut(); },
+    addPost: async (text, file) => {
+      if (!me) return "Please log in";
+      let image_url: string | null = null;
+      if (file) {
+        const ext = file.name.split(".").pop() || "jpg";
+        const path = `${me.id}/${crypto.randomUUID()}.${ext}`;
+        const up = await supabase.storage.from(BUCKET).upload(path, file, { contentType: file.type });
+        if (up.error) return `Photo upload failed: ${up.error.message}`;
+        image_url = path;
+      }
+      const { error } = await supabase.from("posts").insert({ author_id: me.id, text, image_url });
+      if (error) return error.message;
+      await load();
       return null;
     },
-    login: (username) => {
-      const un = username.trim().toLowerCase();
-      if (!users.some((u) => u.username === un)) return "No account with that username";
-      setMeName(un);
-      return null;
-    },
-    logout: () => setMeName(null),
-    addPost: (text, image) => {
+    toggleLike: async (id) => {
       if (!me) return;
-      setPosts([{ id: crypto.randomUUID(), author: me.username, text, image, createdAt: Date.now(), likes: [], comments: [] }, ...posts]);
+      const liked = posts.find((p) => p.id === id)?.likes.includes(me.username);
+      setPosts((ps) => ps.map((p) => p.id !== id ? p : { ...p, likes: liked ? p.likes.filter((l) => l !== me.username) : [...p.likes, me.username] }));
+      if (liked) await supabase.from("post_likes").delete().eq("post_id", id).eq("user_id", me.id);
+      else await supabase.from("post_likes").insert({ post_id: id, user_id: me.id });
+      await load();
     },
-    toggleLike: (id) => {
-      if (!me) return;
-      setPosts(posts.map((p) => p.id !== id ? p : { ...p, likes: p.likes.includes(me.username) ? p.likes.filter((l) => l !== me.username) : [...p.likes, me.username] }));
-    },
-    addComment: (id, text) => {
+    addComment: async (id, text) => {
       if (!me || !text.trim()) return;
-      setPosts(posts.map((p) => p.id !== id ? p : { ...p, comments: [...p.comments, { id: crypto.randomUUID(), author: me.username, text: text.trim() }] }));
+      await supabase.from("comments").insert({ post_id: id, author_id: me.id, text: text.trim() });
+      await load();
     },
   };
   return <StoreCtx.Provider value={value}>{children}</StoreCtx.Provider>;

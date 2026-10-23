@@ -17,7 +17,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Feed() {
-  const { posts, me } = useStore();
+  const { posts, me, ready } = useStore();
   return (
     <Shell>
       <Link to={me ? "/create" : "/login"} className="flex items-center gap-3 border-b bg-card px-4 py-3">
@@ -26,9 +26,8 @@ function Feed() {
           {me ? `What's on your mind, ${me.name.split(" ")[0]}?` : "Join Briva to share your moments"}
         </span>
       </Link>
-      <p className="border-b bg-accent px-4 py-2 text-xs text-accent-foreground">
-        Demo mode: sample posts plus your posts, likes, comments and demo accounts are saved only in this browser. They survive a refresh here but are not shared with other people or devices.
-      </p>
+      {!ready && <p className="p-6 text-center text-sm text-muted-foreground">Loading posts…</p>}
+      {ready && !posts.length && <p className="p-6 text-center text-sm text-muted-foreground">No posts yet. Be the first!</p>}
       {posts.map((p) => <PostCard key={p.id} post={p} />)}
     </Shell>
   );
