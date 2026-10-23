@@ -24,8 +24,8 @@ export function Shell({ children, title }: { children: ReactNode; title?: string
         <Link to="/" className="font-display text-2xl font-extrabold tracking-tight text-primary">briva</Link>
         {title && <span className="text-sm font-semibold text-muted-foreground">{title}</span>}
       </header>
-      <main className="flex-1 pb-20">{children}</main>
-      <nav className="fixed inset-x-0 bottom-0 z-10 mx-auto flex max-w-md border-t bg-card">
+      <main className="flex-1 pb-[calc(5rem+env(safe-area-inset-bottom))]">{children}</main>
+      <nav className="fixed inset-x-0 bottom-0 z-20 mx-auto flex max-w-md border-t bg-card pb-[env(safe-area-inset-bottom)]">
         <Link to="/" className={nav} activeProps={active} activeOptions={{ exact: true }}><Home size={22} />Home</Link>
         <Link to="/create" className={nav} activeProps={active}><PlusSquare size={22} />Post</Link>
         {me ? (

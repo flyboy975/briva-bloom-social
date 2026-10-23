@@ -53,7 +53,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setLoaded(true);
   }, []);
   useEffect(() => {
-    if (loaded) localStorage.setItem(KEY, JSON.stringify({ users, posts, meName }));
+    if (!loaded) return;
+    try { localStorage.setItem(KEY, JSON.stringify({ users, posts, meName })); } catch { console.warn("Briva: browser storage full, latest change not saved"); }
   }, [users, posts, meName, loaded]);
 
   const me = users.find((u) => u.username === meName) ?? null;

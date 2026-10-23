@@ -26,6 +26,9 @@ function Feed() {
           {me ? `What's on your mind, ${me.name.split(" ")[0]}?` : "Join Briva to share your moments"}
         </span>
       </Link>
+      <p className="border-b bg-accent px-4 py-2 text-xs text-accent-foreground">
+        Demo mode: sample posts plus your posts, likes, comments and demo accounts are saved only in this browser. They survive a refresh here but are not shared with other people or devices.
+      </p>
       {posts.map((p) => <PostCard key={p.id} post={p} />)}
     </Shell>
   );
