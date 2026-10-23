@@ -6,7 +6,7 @@ export type Post = {
   id: string;
   author: string;
   text: string;
-  image?: string;
+  image?: string | undefined;
   createdAt: number;
   likes: string[];
   comments: Comment[];
@@ -31,7 +31,7 @@ type Ctx = {
   signup: (u: { name: string; username: string }) => string | null;
   login: (username: string) => string | null;
   logout: () => void;
-  addPost: (text: string, image?: string) => void;
+  addPost: (text: string, image?: string | undefined) => void;
   toggleLike: (id: string) => void;
   addComment: (id: string, text: string) => void;
 };

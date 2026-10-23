@@ -21,7 +21,7 @@ function Create() {
   const { me, addPost } = useStore();
   const nav = useNavigate();
   const [text, setText] = useState("");
-  const [image, setImage] = useState<string>();
+  const [image, setImage] = useState<string | undefined>();
 
   if (!me)
     return (

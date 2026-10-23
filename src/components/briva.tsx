@@ -3,7 +3,7 @@ import { Heart, Home, MessageCircle, PlusSquare, User as UserIcon, LogIn } from 
 import { useState, type ReactNode } from "react";
 import { timeAgo, useStore, type Post, type User } from "@/lib/store";
 
-export function Avatar({ user, size = 40 }: { user?: User; size?: number }) {
+export function Avatar({ user, size = 40 }: { user?: User | undefined; size?: number }) {
   return (
     <div
       className="grid shrink-0 place-items-center rounded-full font-bold text-primary-foreground"
