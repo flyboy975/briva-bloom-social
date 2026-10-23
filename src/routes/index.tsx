@@ -1,24 +1,32 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { PostCard, Shell, Avatar } from "@/components/briva";
+import { useStore } from "@/lib/store";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
-  component: Index,
+  head: () => ({
+    meta: [
+      { title: "Briva — Home feed" },
+      { name: "description", content: "Briva is a friendly social network for everyone. See what people are sharing." },
+      { property: "og:title", content: "Briva — Home feed" },
+      { property: "og:description", content: "A friendly social network for everyone." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
+  component: Feed,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
+function Feed() {
+  const { posts, me } = useStore();
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
+    <Shell>
+      <Link to={me ? "/create" : "/signup"} className="flex items-center gap-3 border-b bg-card px-4 py-3">
+        <Avatar user={me ?? undefined} size={36} />
+        <span className="flex-1 rounded-full bg-secondary px-4 py-2 text-sm text-muted-foreground">
+          {me ? `What's on your mind, ${me.name.split(" ")[0]}?` : "Join Briva to share your moments"}
+        </span>
+      </Link>
+      {posts.map((p) => <PostCard key={p.id} post={p} />)}
+    </Shell>
   );
 }
