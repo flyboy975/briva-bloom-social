@@ -28,7 +28,7 @@ function Create() {
       <Shell title="New post">
         <div className="space-y-4 p-6 text-center">
           <p className="text-muted-foreground">You need an account to post.</p>
-          <Link to="/signup" className={`${btnCls} block`}>Sign up</Link>
+          <Link to="/login" className={`${btnCls} block`}>Sign up</Link>
         </div>
       </Shell>
     );

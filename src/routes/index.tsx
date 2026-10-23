@@ -20,7 +20,7 @@ function Feed() {
   const { posts, me } = useStore();
   return (
     <Shell>
-      <Link to={me ? "/create" : "/signup"} className="flex items-center gap-3 border-b bg-card px-4 py-3">
+      <Link to={me ? "/create" : "/login"} className="flex items-center gap-3 border-b bg-card px-4 py-3">
         <Avatar user={me ?? undefined} size={36} />
         <span className="flex-1 rounded-full bg-secondary px-4 py-2 text-sm text-muted-foreground">
           {me ? `What's on your mind, ${me.name.split(" ")[0]}?` : "Join Briva to share your moments"}
