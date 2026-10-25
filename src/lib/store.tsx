@@ -1,7 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-export type User = { id: string; username: string; name: string; bio: string; avatarColor: string };
+export type User = { id: string; username: string; name: string; bio: string; avatarColor: string; avatarUrl?: string | undefined };
+export type Story = { id: string; userId: string; image: string; createdAt: number };
 export type Comment = { id: string; author: string; text: string };
 export type Post = {
   id: string;
@@ -16,6 +17,7 @@ export type Post = {
 type Ctx = {
   users: User[];
   posts: Post[];
+  stories: Story[];
   me: User | null;
   ready: boolean;
   signup: (u: { name: string; username: string; email: string; password: string }) => Promise<string | null>;
@@ -24,6 +26,8 @@ type Ctx = {
   addPost: (text: string, image?: File | undefined) => Promise<string | null>;
   toggleLike: (id: string) => Promise<void>;
   addComment: (id: string, text: string) => Promise<void>;
+  setAvatar: (file: File) => Promise<string | null>;
+  addStory: (file: File) => Promise<string | null>;
 };
 
 const StoreCtx = createContext<Ctx | null>(null);
@@ -32,25 +36,26 @@ const BUCKET = "post-images";
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [users, setUsers] = useState<User[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
+  const [stories, setStories] = useState<Story[]>([]);
   const [meId, setMeId] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
 
   const load = useCallback(async () => {
-    const [pr, po, li, co] = await Promise.all([
+    const [pr, po, li, co, st] = await Promise.all([
       supabase.from("profiles").select("*"),
       supabase.from("posts").select("*").order("created_at", { ascending: false }).limit(200),
       supabase.from("post_likes").select("post_id,user_id"),
       supabase.from("comments").select("*").order("created_at"),
+      supabase.from("stories").select("*").gt("expires_at", new Date().toISOString()).order("created_at"),
     ]);
-    const us: User[] = (pr.data ?? []).map((p) => ({ id: p.id, username: p.username, name: p.name, bio: p.bio, avatarColor: p.avatar_color }));
+    const avPaths = (pr.data ?? []).map((p) => p.avatar_url).filter((u): u is string => !!u);
+    const avSigned = await signMany("avatars", avPaths);
+    const us: User[] = (pr.data ?? []).map((p) => ({ id: p.id, username: p.username, name: p.name, bio: p.bio, avatarColor: p.avatar_color, avatarUrl: p.avatar_url ? avSigned.get(p.avatar_url) : undefined }));
     const byId = new Map(us.map((u) => [u.id, u.username]));
-    const paths = (po.data ?? []).map((p) => p.image_url).filter((u): u is string => !!u && !u.startsWith("http"));
-    const signed = new Map<string, string>();
-    if (paths.length) {
-      const { data } = await supabase.storage.from(BUCKET).createSignedUrls(paths, 60 * 60 * 24);
-      data?.forEach((d) => { if (d.path && d.signedUrl) signed.set(d.path, d.signedUrl); });
-    }
+    const paths = [...(po.data ?? []).map((p) => p.image_url), ...(st.data ?? []).map((s) => s.image_url)].filter((u): u is string => !!u && !u.startsWith("http"));
+    const signed = await signMany(BUCKET, paths);
     setUsers(us);
+    setStories((st.data ?? []).map((s) => ({ id: s.id, userId: s.user_id, image: signed.get(s.image_url) ?? s.image_url, createdAt: new Date(s.created_at).getTime() })).filter((s) => s.image.startsWith("http")));
     setPosts((po.data ?? []).map((p) => ({
       id: p.id,
       author: byId.get(p.author_id) ?? "unknown",
@@ -74,6 +79,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       .on("postgres_changes", { event: "*", schema: "public", table: "posts" }, () => void load())
       .on("postgres_changes", { event: "*", schema: "public", table: "post_likes" }, () => void load())
       .on("postgres_changes", { event: "*", schema: "public", table: "comments" }, () => void load())
+      .on("postgres_changes", { event: "*", schema: "public", table: "stories" }, () => void load())
       .subscribe();
     return () => { sub.subscription.unsubscribe(); supabase.removeChannel(channel); };
   }, [load]);
@@ -81,7 +87,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const me = users.find((u) => u.id === meId) ?? null;
 
   const value: Ctx = {
-    users, posts, me, ready,
+    users, posts, stories, me, ready,
     signup: async ({ name, username, email, password }) => {
       const un = username.trim().toLowerCase();
       if (!/^[a-z0-9_]{3,20}$/.test(un)) return "Username: 3–20 letters, numbers or _";
@@ -125,6 +131,28 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       await supabase.from("comments").insert({ post_id: id, author_id: me.id, text: text.trim() });
       await load();
     },
+    setAvatar: async (file) => {
+      if (!me) return "Please log in";
+      if (file.size > 5 * 1024 * 1024) return "Photo must be under 5 MB";
+      const path = `${me.id}/${crypto.randomUUID()}.${file.name.split(".").pop() || "jpg"}`;
+      const up = await supabase.storage.from("avatars").upload(path, file, { contentType: file.type });
+      if (up.error) return up.error.message;
+      const { error } = await supabase.from("profiles").update({ avatar_url: path }).eq("id", me.id);
+      if (error) return error.message;
+      await load();
+      return null;
+    },
+    addStory: async (file) => {
+      if (!me) return "Please log in";
+      if (file.size > 5 * 1024 * 1024) return "Photo must be under 5 MB";
+      const path = `${me.id}/story-${crypto.randomUUID()}.${file.name.split(".").pop() || "jpg"}`;
+      const up = await supabase.storage.from(BUCKET).upload(path, file, { contentType: file.type });
+      if (up.error) return up.error.message;
+      const { error } = await supabase.from("stories").insert({ user_id: me.id, image_url: path });
+      if (error) return error.message;
+      await load();
+      return null;
+    },
   };
   return <StoreCtx.Provider value={value}>{children}</StoreCtx.Provider>;
 }
@@ -141,4 +169,13 @@ export function timeAgo(t: number) {
   if (m < 60) return `${m}m`;
   const h = Math.floor(m / 60);
   return h < 24 ? `${h}h` : `${Math.floor(h / 24)}d`;
+}
+
+export async function signMany(bucket: string, paths: string[]) {
+  const out = new Map<string, string>();
+  const uniq = [...new Set(paths)];
+  if (!uniq.length) return out;
+  const { data } = await supabase.storage.from(bucket).createSignedUrls(uniq, 60 * 60 * 24);
+  data?.forEach((d) => { if (d.path && d.signedUrl) out.set(d.path, d.signedUrl); });
+  return out;
 }
