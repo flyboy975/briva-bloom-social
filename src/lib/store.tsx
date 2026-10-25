@@ -65,7 +65,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
       setMeId(session?.user.id ?? null);
-      if (event === "SIGNED_IN" || event === "USER_UPDATED") void load();
+      if (event === "SIGNED_IN" || event === "USER_UPDATED" || event === "SIGNED_OUT") void load();
     });
     supabase.auth.getUser().then(({ data }) => setMeId(data.user?.id ?? null));
     load().finally(() => setReady(true));

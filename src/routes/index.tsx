@@ -27,7 +27,13 @@ function Feed() {
         </span>
       </Link>
       {!ready && <p className="p-6 text-center text-sm text-muted-foreground">Loading posts…</p>}
-      {ready && !posts.length && <p className="p-6 text-center text-sm text-muted-foreground">No posts yet. Be the first!</p>}
+      {ready && !me && (
+        <div className="p-6 text-center">
+          <p className="text-sm text-muted-foreground">Posts on Briva are for members only. Log in or sign up to see what people are sharing.</p>
+          <Link to="/login" className="mt-4 inline-flex rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground">Log in or sign up</Link>
+        </div>
+      )}
+      {ready && me && !posts.length && <p className="p-6 text-center text-sm text-muted-foreground">No posts yet. Be the first!</p>}
       {posts.map((p) => <PostCard key={p.id} post={p} />)}
     </Shell>
   );
