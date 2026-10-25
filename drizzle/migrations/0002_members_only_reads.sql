@@ -1,0 +1,11 @@
+DROP POLICY IF EXISTS "profiles readable" ON public.profiles;
+CREATE POLICY "members read profiles" ON public.profiles FOR SELECT TO authenticated USING (auth.uid() IS NOT NULL);
+DROP POLICY IF EXISTS "posts readable" ON public.posts;
+CREATE POLICY "members read posts" ON public.posts FOR SELECT TO authenticated USING (auth.uid() IS NOT NULL);
+DROP POLICY IF EXISTS "likes readable" ON public.post_likes;
+CREATE POLICY "members read likes" ON public.post_likes FOR SELECT TO authenticated USING (auth.uid() IS NOT NULL);
+DROP POLICY IF EXISTS "comments readable" ON public.comments;
+CREATE POLICY "members read comments" ON public.comments FOR SELECT TO authenticated USING (auth.uid() IS NOT NULL);
+REVOKE SELECT ON public.profiles, public.posts, public.post_likes, public.comments FROM anon;
+DROP POLICY IF EXISTS "post images public read" ON storage.objects;
+CREATE POLICY "members read post images" ON storage.objects FOR SELECT TO authenticated USING (bucket_id = 'post-images' AND auth.uid() IS NOT NULL);
