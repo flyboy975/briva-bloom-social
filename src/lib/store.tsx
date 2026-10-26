@@ -90,7 +90,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       .on("postgres_changes", { event: "*", schema: "public", table: "profiles" }, () => void load())
       .on("postgres_changes", { event: "*", schema: "public", table: "friendships" }, () => void load())
       .subscribe();
-    return () => { sub.subscription.unsubscribe(); supabase.removeChannel(channel); };
+    // Refresh signed photos and permission changes even if a realtime event is missed.
+    const refresh = window.setInterval(() => void load(), 30_000);
+    const onFocus = () => void load();
+    window.addEventListener("focus", onFocus);
+    return () => { window.clearInterval(refresh); window.removeEventListener("focus", onFocus); sub.subscription.unsubscribe(); supabase.removeChannel(channel); };
   }, [load]);
 
   const me = users.find((u) => u.id === meId) ?? null;
