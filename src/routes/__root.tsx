@@ -15,6 +15,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { StoreProvider } from "../lib/store";
 import { registerServiceWorker } from "../lib/pwa";
 import { InstallPrompt } from "../components/install-prompt";
+import { MessagingProvider } from "@/lib/messaging";
 
 function NotFoundComponent() {
   return (
@@ -126,8 +127,10 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <StoreProvider>
+        <MessagingProvider>
         <Outlet />
         <InstallPrompt />
+        </MessagingProvider>
       </StoreProvider>
     </QueryClientProvider>
   );

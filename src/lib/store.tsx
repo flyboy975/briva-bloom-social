@@ -1,8 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { imageError } from "@/lib/social-rules";
 
 export type User = { id: string; username: string; name: string; bio: string; avatarColor: string; avatarUrl?: string | undefined };
-export type Story = { id: string; userId: string; image: string; createdAt: number };
+export type Story = { id: string; userId: string; image: string; createdAt: number; expiresAt: number };
 export type Comment = { id: string; author: string; text: string };
 export type Post = {
   id: string;
@@ -55,7 +56,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     const paths = [...(po.data ?? []).map((p) => p.image_url), ...(st.data ?? []).map((s) => s.image_url)].filter((u): u is string => !!u && !u.startsWith("http"));
     const signed = await signMany(BUCKET, paths);
     setUsers(us);
-    setStories((st.data ?? []).map((s) => ({ id: s.id, userId: s.user_id, image: signed.get(s.image_url) ?? s.image_url, createdAt: new Date(s.created_at).getTime() })).filter((s) => s.image.startsWith("http")));
+    setStories((st.data ?? []).map((s) => ({ id: s.id, userId: s.user_id, image: signed.get(s.image_url) ?? s.image_url, createdAt: new Date(s.created_at).getTime(), expiresAt: new Date(s.expires_at).getTime() })).filter((s) => s.image.startsWith("http")));
     setPosts((po.data ?? []).map((p) => ({
       id: p.id,
       author: byId.get(p.author_id) ?? "unknown",
@@ -80,6 +81,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       .on("postgres_changes", { event: "*", schema: "public", table: "post_likes" }, () => void load())
       .on("postgres_changes", { event: "*", schema: "public", table: "comments" }, () => void load())
       .on("postgres_changes", { event: "*", schema: "public", table: "stories" }, () => void load())
+      .on("postgres_changes", { event: "*", schema: "public", table: "profiles" }, () => void load())
       .subscribe();
     return () => { sub.subscription.unsubscribe(); supabase.removeChannel(channel); };
   }, [load]);
@@ -133,7 +135,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     },
     setAvatar: async (file) => {
       if (!me) return "Please log in";
-      if (file.size > 5 * 1024 * 1024) return "Photo must be under 5 MB";
+      const invalid = imageError(file);
+      if (invalid) return invalid;
       const path = `${me.id}/${crypto.randomUUID()}.${file.name.split(".").pop() || "jpg"}`;
       const up = await supabase.storage.from("avatars").upload(path, file, { contentType: file.type });
       if (up.error) return up.error.message;
@@ -144,7 +147,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     },
     addStory: async (file) => {
       if (!me) return "Please log in";
-      if (file.size > 5 * 1024 * 1024) return "Photo must be under 5 MB";
+      const invalid = imageError(file);
+      if (invalid) return invalid;
       const path = `${me.id}/story-${crypto.randomUUID()}.${file.name.split(".").pop() || "jpg"}`;
       const up = await supabase.storage.from(BUCKET).upload(path, file, { contentType: file.type });
       if (up.error) return up.error.message;

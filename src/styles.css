@@ -29,6 +29,8 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
+  --color-story-background: var(--story-background);
+  --color-story-foreground: var(--story-foreground);
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
@@ -74,6 +76,8 @@
 }
 
 :root {
+  --story-background: oklch(0.13 0.01 260);
+  --story-foreground: oklch(1 0 0);
   --radius: 0.75rem;
   --background: oklch(0.975 0.008 250);
   --foreground: oklch(0.22 0.04 260);
@@ -154,3 +158,8 @@
     color: var(--color-foreground);
   }
 }
+
+.story-progress { appearance: none; border: 0; border-radius: 2px; overflow: hidden; background: color-mix(in oklab, var(--story-foreground) 30%, transparent); }
+.story-progress::-webkit-progress-bar { background: color-mix(in oklab, var(--story-foreground) 30%, transparent); }
+.story-progress::-webkit-progress-value { background: var(--story-foreground); }
+.story-progress::-moz-progress-bar { background: var(--story-foreground); }
