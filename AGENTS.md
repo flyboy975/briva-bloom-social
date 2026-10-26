@@ -11,3 +11,5 @@
 
 - Social data (profiles, posts, likes, comments, post photos) is readable only by signed-in members; signed-out visitors see a join prompt. Why: avoid anonymous scraping of user content.
 - Offline caching uses vite-plugin-pwa generateSW, registered only via src/lib/pwa.ts with preview/dev guards. Why: service workers must never run in previews.
+- Messaging state lives in a provider inside StoreProvider, with effect-scoped realtime channels; database grants limit recipients to read receipts and keep conversation participants immutable to protect private chats.
+- Stories use a dedicated viewer and shared expiry rules; a database trigger enforces the lifetime so clients cannot extend it.

@@ -4,7 +4,7 @@ import { signMany, useStore } from "@/lib/store";
 import { conversationPair, imageError, unreadMessages } from "@/lib/social-rules";
 
 export type Conversation = { id: string; user_a: string; user_b: string; last_message_at: string };
-export type Message = { id: string; conversationId: string; senderId: string; text: string | null; image?: string; createdAt: string; readAt: string | null };
+export type Message = { id: string; conversationId: string; senderId: string; text: string | null; image?: string | undefined; createdAt: string; readAt: string | null };
 type Messaging = {
   conversations: Conversation[]; messages: Message[]; unread: number; error: string;
   start: (userId: string) => Promise<string>;
