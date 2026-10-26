@@ -10,3 +10,6 @@
 - [x] Hide Lovable badge through publishing settings
 - [ ] Verify new social flows on phone and desktop layouts
 - [x] Replace signed-out profile errors with a private join prompt and verify its login/signup navigation
+- [ ] Add secure friend requests and member-controlled profile privacy
+- [ ] Add profile friendship controls and pending-request notifications
+- [ ] Verify friend transitions and private posts/stories access
