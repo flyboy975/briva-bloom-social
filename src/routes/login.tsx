@@ -52,7 +52,7 @@ function Login() {
         const r = mode === "login" ? await login(email, pw) : await signup({ name, username: u, email, password: pw });
         setBusy(false);
         if (r) setErr(r);
-        else if (mode === "signup") setSent(true);
+        else nav({ to: "/" });
       }}>
         <div className="flex gap-1 rounded-xl bg-secondary p-1">{tab("login", "Log in")}{tab("signup", "Sign up")}</div>
         <h1 className="font-display text-3xl font-extrabold">{mode === "login" ? "Welcome back" : "Join Briva"}</h1>
