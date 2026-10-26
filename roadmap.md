@@ -1,4 +1,9 @@
 # Briva roadmap
+- [ ] Add groups with creator-selected joining rules, member posts and admin approvals
+- [ ] Add marketplace listings with price and location
+- [ ] Add English / Swahili / Sheng language selection
+- [ ] Add worldwide events feed filtered by location
+- [ ] Verify new community flows and access rules
 - [x] Real accounts, shared posts, likes, comments, photos (Lovable Cloud)
 - [x] End-to-end test of sign-up, posting with photo, like, comment
 - [x] Decision: stay on Lovable Cloud (no external project)
