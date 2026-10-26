@@ -14,3 +14,5 @@
 - Messaging state lives in a provider inside StoreProvider, with effect-scoped realtime channels; database grants limit recipients to read receipts and keep conversation participants immutable to protect private chats.
 - Stories use a dedicated viewer and shared expiry rules; a database trigger enforces the lifetime so clients cannot extend it.
 - Profile presentation uses shared loading/join/member/missing state rules before rendering user data, so cached profiles cannot appear to signed-out visitors.
+- Friendship state lives in StoreProvider with effect-scoped realtime reloads; shared rules gate cached posts/stories and database policies gate reads, interactions and photo signing. Why: pending or removed friendships must never unlock private content.
+- Private profiles keep member-visible identity for friend requests, but their posts, stories and interactions require ownership or an accepted friendship; only receivers can accept and participants cannot change friendship identities. Why: enforce privacy independently of the UI.
