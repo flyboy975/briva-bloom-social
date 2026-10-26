@@ -8,7 +8,7 @@ import { useMessaging } from "@/lib/messaging";
 import { imageError, unreadMessages } from "@/lib/social-rules";
 
 export const Route = createFileRoute("/messages")({
-  validateSearch: (search: Record<string, unknown>): { conversation?: string } => ({ conversation: typeof search.conversation === "string" ? search.conversation : undefined }),
+  validateSearch: (search: Record<string, unknown>): { conversation?: string | undefined } => ({ conversation: typeof search['conversation'] === "string" ? search['conversation'] : undefined }),
   head: () => ({ meta: [
     { title: "Private messages — Briva" }, { name: "description", content: "Your private conversations on Briva." },
     { property: "og:title", content: "Private messages — Briva" }, { property: "og:description", content: "Stay in touch with your Briva friends." },

@@ -14,18 +14,18 @@ export function Avatar({ user, size = 40 }: { user?: User | undefined; size?: nu
   );
 }
 
-export function Shell({ children, title }: { children: ReactNode; title?: string }) {
+export function Shell({ children, title, wide = false }: { children: ReactNode; title?: string; wide?: boolean }) {
   const { me } = useStore();
   const nav = "flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] font-medium text-muted-foreground";
   const active = { className: `${nav} !text-primary` };
   return (
-    <div className="mx-auto flex min-h-screen max-w-md flex-col bg-background">
+    <div className={`mx-auto flex min-h-screen flex-col bg-background ${wide ? "max-w-4xl" : "max-w-md"}`}>
       <header className="sticky top-0 z-10 flex items-center justify-between border-b bg-card/90 px-4 py-3 backdrop-blur">
         <Link to="/" className="font-display text-2xl font-extrabold tracking-tight text-primary">briva</Link>
         {title && <span className="text-sm font-semibold text-muted-foreground">{title}</span>}
       </header>
       <main className="flex-1 pb-[calc(5rem+env(safe-area-inset-bottom))]">{children}</main>
-      <nav className="fixed inset-x-0 bottom-0 z-20 mx-auto flex max-w-md border-t bg-card pb-[env(safe-area-inset-bottom)]">
+      <nav className={`fixed inset-x-0 bottom-0 z-20 mx-auto flex border-t bg-card pb-[env(safe-area-inset-bottom)] ${wide ? "max-w-4xl" : "max-w-md"}`}>
         <Link to="/" className={nav} activeProps={active} activeOptions={{ exact: true }}><Home size={22} />Home</Link>
         <Link to="/create" className={nav} activeProps={active}><PlusSquare size={22} />Post</Link>
         {me ? (
