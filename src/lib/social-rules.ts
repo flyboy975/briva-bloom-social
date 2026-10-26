@@ -1,4 +1,9 @@
 export const STORY_LIFETIME_MS = 24 * 60 * 60 * 1000;
+export function profileViewState(ready: boolean, signedIn: boolean, profileExists: boolean) {
+  if (!ready) return "loading";
+  if (!signedIn) return "join";
+  return profileExists ? "profile" : "missing";
+}
 export function liveStories<T extends { expiresAt: number }>(stories: T[], now: number) {
   return stories.filter((story) => story.expiresAt > now);
 }
