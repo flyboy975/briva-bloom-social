@@ -9,4 +9,4 @@
 - [x] Finish private messages, photos, unread count, realtime
 - [x] Hide Lovable badge through publishing settings
 - [ ] Verify new social flows on phone and desktop layouts
-- [ ] Replace signed-out profile errors with a private join prompt and verify its login/signup navigation
+- [x] Replace signed-out profile errors with a private join prompt and verify its login/signup navigation
