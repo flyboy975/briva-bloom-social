@@ -83,8 +83,9 @@ export function PostCard({ post }: { post: Post }) {
       {open && (
         <div className="mt-3 space-y-2">
           {post.comments.map((c) => (
-            <div key={c.id} className="rounded-xl bg-secondary px-3 py-2 text-sm">
-              <span className="font-semibold">@{c.author}</span> {c.text}
+            <div key={c.id} className="flex items-start gap-2">
+              <Avatar user={users.find((u) => u.username === c.author)} size={28} />
+              <div className="flex-1 rounded-xl bg-secondary px-3 py-2 text-sm"><span className="font-semibold">@{c.author}</span> {c.text}</div>
             </div>
           ))}
           {me ? (
