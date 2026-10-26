@@ -43,6 +43,13 @@
       "when": 1792990006406,
       "tag": "0005_friend_requests_profile_privacy",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792990298769,
+      "tag": "0006_realtime_profile_privacy",
+      "breakpoints": true
     }
   ]
 }
