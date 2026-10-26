@@ -29,6 +29,13 @@
       "when": 1792901314672,
       "tag": "0003_avatars_stories_dms",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792982766942,
+      "tag": "0004_secure_message_updates",
+      "breakpoints": true
     }
   ]
 }
