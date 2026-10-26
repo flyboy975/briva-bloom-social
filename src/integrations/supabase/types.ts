@@ -92,6 +92,45 @@ export type Database = {
           },
         ]
       }
+      friendships: {
+        Row: {
+          created_at: string
+          id: string
+          receiver_id: string
+          requester_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          receiver_id: string
+          requester_id: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          receiver_id?: string
+          requester_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "friendships_receiver_id_fkey"
+            columns: ["receiver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "friendships_requester_id_fkey"
+            columns: ["requester_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           conversation_id: string
@@ -209,6 +248,7 @@ export type Database = {
           bio: string
           created_at: string
           id: string
+          is_private: boolean
           name: string
           username: string
         }
@@ -218,6 +258,7 @@ export type Database = {
           bio?: string
           created_at?: string
           id: string
+          is_private?: boolean
           name: string
           username: string
         }
@@ -227,6 +268,7 @@ export type Database = {
           bio?: string
           created_at?: string
           id?: string
+          is_private?: boolean
           name?: string
           username?: string
         }
@@ -269,6 +311,8 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_view_member_content: { Args: { _owner: string }; Returns: boolean }
+      can_view_post: { Args: { _post: string }; Returns: boolean }
       is_participant: {
         Args: { _conv: string; _user: string }
         Returns: boolean
