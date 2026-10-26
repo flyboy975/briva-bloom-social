@@ -13,3 +13,4 @@
 - Offline caching uses vite-plugin-pwa generateSW, registered only via src/lib/pwa.ts with preview/dev guards. Why: service workers must never run in previews.
 - Messaging state lives in a provider inside StoreProvider, with effect-scoped realtime channels; database grants limit recipients to read receipts and keep conversation participants immutable to protect private chats.
 - Stories use a dedicated viewer and shared expiry rules; a database trigger enforces the lifetime so clients cannot extend it.
+- Profile presentation uses shared loading/join/member/missing state rules before rendering user data, so cached profiles cannot appear to signed-out visitors.

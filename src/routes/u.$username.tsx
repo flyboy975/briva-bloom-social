@@ -1,8 +1,10 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 import { Avatar, PostCard, Shell } from "@/components/briva";
 import { useStore } from "@/lib/store";
 import { useMessaging } from "@/lib/messaging";
+import { Button } from "@/components/ui/button";
+import { profileViewState } from "@/lib/social-rules";
 
 export const Route = createFileRoute("/u/$username")({
   head: ({ params }) => ({
@@ -29,7 +31,20 @@ function Profile() {
   const user = users.find((u) => u.username === username);
   const mine = posts.filter((p) => p.author === username);
 
-  if (!user) return <Shell title="Profile"><p className="p-6 text-center text-muted-foreground">{ready ? "User not found." : "Loading…"}</p></Shell>;
+  const view = profileViewState(ready, Boolean(me), Boolean(user));
+  if (view === "loading") return <Shell title="Profile"><p className="p-6 text-center text-muted-foreground">Loading…</p></Shell>;
+  if (view === "join") return (
+    <Shell title="Profile">
+      <div className="space-y-4 p-6 text-center">
+        <h1 className="font-display text-2xl font-bold">Join Briva</h1>
+        <p className="text-sm text-muted-foreground">Profiles and posts are for signed-in members only. Log in or sign up to connect with people on Briva.</p>
+        <Button asChild size="lg" className="max-w-full rounded-full">
+          <Link to="/login">Log in or sign up</Link>
+        </Button>
+      </div>
+    </Shell>
+  );
+  if (!user) return <Shell title="Profile"><p className="p-6 text-center text-muted-foreground">User not found.</p></Shell>;
   const isMe = me?.id === user.id;
   const pill = "rounded-full border px-4 py-1.5 text-sm font-semibold disabled:opacity-60";
 
