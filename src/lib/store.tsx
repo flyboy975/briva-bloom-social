@@ -1,8 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { imageError } from "@/lib/social-rules";
+import { canViewContent, imageError, type Friendship } from "@/lib/social-rules";
 
-export type User = { id: string; username: string; name: string; bio: string; avatarColor: string; avatarUrl?: string | undefined };
+export type User = { id: string; username: string; name: string; bio: string; avatarColor: string; avatarUrl?: string | undefined; isPrivate: boolean };
 export type Story = { id: string; userId: string; image: string; createdAt: number; expiresAt: number };
 export type Comment = { id: string; author: string; text: string };
 export type Post = {
@@ -29,6 +29,9 @@ type Ctx = {
   addComment: (id: string, text: string) => Promise<void>;
   setAvatar: (file: File) => Promise<string | null>;
   addStory: (file: File) => Promise<string | null>;
+  friendships: Friendship[];
+  friendAction: (otherId: string, action: "request" | "accept" | "remove") => Promise<string | null>;
+  setPrivate: (privateProfile: boolean) => Promise<string | null>;
 };
 
 const StoreCtx = createContext<Ctx | null>(null);
@@ -40,18 +43,21 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [stories, setStories] = useState<Story[]>([]);
   const [meId, setMeId] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
+  const [friendships, setFriendships] = useState<Friendship[]>([]);
 
   const load = useCallback(async () => {
-    const [pr, po, li, co, st] = await Promise.all([
+    const [pr, po, li, co, st, fr] = await Promise.all([
       supabase.from("profiles").select("*"),
       supabase.from("posts").select("*").order("created_at", { ascending: false }).limit(200),
       supabase.from("post_likes").select("post_id,user_id"),
       supabase.from("comments").select("*").order("created_at"),
       supabase.from("stories").select("*").gt("expires_at", new Date().toISOString()).order("created_at"),
+      supabase.from("friendships").select("*").order("created_at", { ascending: false }),
     ]);
     const avPaths = (pr.data ?? []).map((p) => p.avatar_url).filter((u): u is string => !!u);
     const avSigned = await signMany("avatars", avPaths);
-    const us: User[] = (pr.data ?? []).map((p) => ({ id: p.id, username: p.username, name: p.name, bio: p.bio, avatarColor: p.avatar_color, avatarUrl: p.avatar_url ? avSigned.get(p.avatar_url) : undefined }));
+    const us: User[] = (pr.data ?? []).map((p) => ({ id: p.id, username: p.username, name: p.name, bio: p.bio, avatarColor: p.avatar_color, avatarUrl: p.avatar_url ? avSigned.get(p.avatar_url) : undefined, isPrivate: p.is_private }));
+    setFriendships((fr.data ?? []).filter((f): f is typeof f & { status: "pending" | "accepted" } => f.status === "pending" || f.status === "accepted"));
     const byId = new Map(us.map((u) => [u.id, u.username]));
     const paths = [...(po.data ?? []).map((p) => p.image_url), ...(st.data ?? []).map((s) => s.image_url)].filter((u): u is string => !!u && !u.startsWith("http"));
     const signed = await signMany(BUCKET, paths);
@@ -82,14 +88,40 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       .on("postgres_changes", { event: "*", schema: "public", table: "comments" }, () => void load())
       .on("postgres_changes", { event: "*", schema: "public", table: "stories" }, () => void load())
       .on("postgres_changes", { event: "*", schema: "public", table: "profiles" }, () => void load())
+      .on("postgres_changes", { event: "*", schema: "public", table: "friendships" }, () => void load())
       .subscribe();
-    return () => { sub.subscription.unsubscribe(); supabase.removeChannel(channel); };
+    // Refresh signed photos and permission changes even if a realtime event is missed.
+    const refresh = window.setInterval(() => void load(), 30_000);
+    const onFocus = () => void load();
+    window.addEventListener("focus", onFocus);
+    return () => { window.clearInterval(refresh); window.removeEventListener("focus", onFocus); sub.subscription.unsubscribe(); supabase.removeChannel(channel); };
   }, [load]);
 
   const me = users.find((u) => u.id === meId) ?? null;
+  const visible = (id: string) => { const owner = users.find((u) => u.id === id); return Boolean(owner && canViewContent(meId, id, owner.isPrivate, friendships)); };
 
   const value: Ctx = {
-    users, posts, stories, me, ready,
+    users, posts: posts.filter((p) => { const author = users.find((u) => u.username === p.author); return author ? visible(author.id) : false; }), stories: stories.filter((s) => visible(s.userId)), me, ready, friendships,
+    setPrivate: async (is_private) => {
+      if (!me) return "Please log in";
+      const { error } = await supabase.from("profiles").update({ is_private }).eq("id", me.id);
+      if (error) return error.message;
+      await load(); return null;
+    },
+    friendAction: async (otherId, action) => {
+      if (!me || otherId === me.id) return "Choose another member";
+      const match = friendships.find((f) => (f.requester_id === me.id && f.receiver_id === otherId) || (f.receiver_id === me.id && f.requester_id === otherId));
+      if (action !== "request" && !match) return "This request is no longer available";
+      const result = action === "request"
+        ? await supabase.from("friendships").insert({ requester_id: me.id, receiver_id: otherId })
+        : action === "accept"
+          ? await supabase.from("friendships").update({ status: "accepted" }).eq("id", match?.id ?? "").eq("receiver_id", me.id).eq("status", "pending").select("id")
+          : await supabase.from("friendships").delete().eq("id", match?.id ?? "");
+      await load();
+      if (result.error) return result.error.message;
+      if (action === "accept" && !result.data?.length) return "This request is no longer available";
+      return null;
+    },
     signup: async ({ name, username, email, password }) => {
       const un = username.trim().toLowerCase();
       if (!/^[a-z0-9_]{3,20}$/.test(un)) return "Username: 3–20 letters, numbers or _";
@@ -179,7 +211,7 @@ export async function signMany(bucket: string, paths: string[]) {
   const out = new Map<string, string>();
   const uniq = [...new Set(paths)];
   if (!uniq.length) return out;
-  const { data } = await supabase.storage.from(bucket).createSignedUrls(uniq, 60 * 60 * 24);
+  const { data } = await supabase.storage.from(bucket).createSignedUrls(uniq, bucket === "post-images" ? 60 : 60 * 60 * 24);
   data?.forEach((d) => { if (d.path && d.signedUrl) out.set(d.path, d.signedUrl); });
   return out;
 }

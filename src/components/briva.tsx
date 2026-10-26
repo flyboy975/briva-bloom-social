@@ -1,8 +1,12 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Heart, Home, MessageCircle, PlusSquare, Send, User as UserIcon, LogIn } from "lucide-react";
+import { Bell, Heart, Home, MessageCircle, PlusSquare, Send, User as UserIcon, LogIn } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { timeAgo, useStore, type Post, type User } from "@/lib/store";
 import { useMessaging } from "@/lib/messaging";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { FriendshipActions } from "@/components/friendship-actions";
+import { pendingRequests } from "@/lib/social-rules";
 
 export function Avatar({ user, size = 40 }: { user?: User | undefined; size?: number }) {
   const [broken, setBroken] = useState(false);
@@ -20,7 +24,8 @@ export function Avatar({ user, size = 40 }: { user?: User | undefined; size?: nu
 }
 
 export function Shell({ children, title, wide = false }: { children: ReactNode; title?: string; wide?: boolean }) {
-  const { me } = useStore();
+  const { me, users, friendships } = useStore();
+  const requests = me ? pendingRequests(friendships, me.id) : [];
   const { unread } = useMessaging();
   const nav = "flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] font-medium text-muted-foreground";
   const active = { className: `${nav} !text-primary` };
@@ -30,6 +35,7 @@ export function Shell({ children, title, wide = false }: { children: ReactNode; 
         <Link to="/" className="font-display text-2xl font-extrabold tracking-tight text-primary">briva</Link>
         <div className="flex items-center gap-3">
           {title && <span className="text-sm font-semibold text-muted-foreground">{title}</span>}
+          {me && <Popover><PopoverTrigger asChild><Button variant="ghost" size="icon" className="relative" title="Friend requests" aria-label={`Friend requests, ${requests.length} pending`}><Bell />{requests.length > 0 && <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">{requests.length > 99 ? "99+" : requests.length}</span>}</Button></PopoverTrigger><PopoverContent align="end" className="max-h-[70dvh] w-80 max-w-[calc(100vw-2rem)] overflow-y-auto"><h2 className="mb-3 font-semibold">Friend requests</h2>{!requests.length && <p className="text-sm text-muted-foreground">No pending requests.</p>}{requests.map((request) => { const person = users.find((u) => u.id === request.requester_id); return <div key={request.id} className="space-y-3 border-t py-3"><Link to="/u/$username" params={{ username: person?.username ?? "unknown" }} className="flex min-w-0 items-center gap-2"><Avatar user={person} size={32} /><span className="truncate text-sm font-semibold">{person?.name ?? "Member"}</span></Link><FriendshipActions otherId={request.requester_id} /></div>; })}</PopoverContent></Popover>}
           {me && (
             <Link to="/messages" search={{}} aria-label={unread ? `Messages, ${unread} unread` : "Messages"} className="relative p-1 text-foreground">
               <Send size={22} />

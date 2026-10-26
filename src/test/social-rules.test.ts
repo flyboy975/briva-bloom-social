@@ -1,6 +1,34 @@
 import { describe, expect, it } from "vitest";
-import { conversationPair, liveStories, profileViewState, STORY_LIFETIME_MS, unreadMessages } from "@/lib/social-rules";
+import { canViewContent, friendshipState, pendingRequests, conversationPair, liveStories, profileViewState, STORY_LIFETIME_MS, unreadMessages, type Friendship } from "@/lib/social-rules";
 describe("Briva social rules", () => {
+  const pending: Friendship[] = [{ id: "request", requester_id: "a", receiver_id: "b", status: "pending" }];
+  const accepted: Friendship[] = [{ id: "request", requester_id: "a", receiver_id: "b", status: "accepted" }];
+  it("private posts and stories require accepted friendship, not a pending request", () => {
+    expect(canViewContent("a", "b", true, [])).toBe(false);
+    expect(canViewContent("a", "b", true, pending)).toBe(false);
+    expect(canViewContent("a", "b", true, accepted)).toBe(true);
+    expect(canViewContent("b", "a", true, accepted)).toBe(true);
+  });
+  it("owners keep access and nonprivate profiles are still members-only", () => {
+    expect(canViewContent("a", "a", true, [])).toBe(true);
+    expect(canViewContent(null, "a", false, [])).toBe(false);
+    expect(canViewContent("b", "a", false, [])).toBe(true);
+  });
+  it("unfriending removes private content access", () => {
+    expect(canViewContent("a", "b", true, accepted.filter((f) => f.id !== "request"))).toBe(false);
+  });
+  it("only incoming pending requests count toward the bell", () => {
+    expect(pendingRequests(pending, "b")).toHaveLength(1);
+    expect(pendingRequests(pending, "a")).toHaveLength(0);
+    expect(pendingRequests(accepted, "b")).toHaveLength(0);
+  });
+  it("distinguishes accept, cancel and unfriend actions", () => {
+    expect(friendshipState(pending, "b", "a")).toBe("incoming");
+    expect(friendshipState(pending, "a", "b")).toBe("outgoing");
+    expect(friendshipState(accepted, "a", "b")).toBe("friends");
+    expect(friendshipState([], "a", "b")).toBe("none");
+    expect(friendshipState([], "a", "a")).toBe("self");
+  });
   it("requires joining before showing any profile, even when profile data remains cached", () => {
     expect(profileViewState(true, false, false)).toBe("join");
     expect(profileViewState(true, false, true)).toBe("join");
