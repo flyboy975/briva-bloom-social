@@ -4,8 +4,8 @@
 - [x] Decision: stay on Lovable Cloud (no external project)
 - [x] Fix 4 critical security findings (members-only reads)
 - [x] PWA: manifest.json, offline service worker, apple-touch-icon, install prompt
-- [ ] Finish profile photo upload and display everywhere
-- [ ] Finish stories bar, upload, expiry, full-screen viewer
-- [ ] Finish private messages, photos, unread count, realtime
-- [ ] Hide Lovable badge through publishing settings
+- [x] Finish profile photo upload and display everywhere
+- [x] Finish stories bar, upload, expiry, full-screen viewer
+- [x] Finish private messages, photos, unread count, realtime
+- [x] Hide Lovable badge through publishing settings
 - [ ] Verify new social flows on phone and desktop layouts
