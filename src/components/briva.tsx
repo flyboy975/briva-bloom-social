@@ -1,9 +1,14 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Heart, Home, MessageCircle, PlusSquare, User as UserIcon, LogIn } from "lucide-react";
+import { Heart, Home, MessageCircle, PlusSquare, Send, User as UserIcon, LogIn } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { timeAgo, useStore, type Post, type User } from "@/lib/store";
+import { useMessaging } from "@/lib/messaging";
 
 export function Avatar({ user, size = 40 }: { user?: User | undefined; size?: number }) {
+  const [broken, setBroken] = useState(false);
+  if (user?.avatarUrl && !broken) {
+    return <img src={user.avatarUrl} alt={user.name} onError={() => setBroken(true)} className="shrink-0 rounded-full object-cover" style={{ width: size, height: size }} />;
+  }
   return (
     <div
       className="grid shrink-0 place-items-center rounded-full font-bold text-primary-foreground"
@@ -16,13 +21,22 @@ export function Avatar({ user, size = 40 }: { user?: User | undefined; size?: nu
 
 export function Shell({ children, title, wide = false }: { children: ReactNode; title?: string; wide?: boolean }) {
   const { me } = useStore();
+  const { unread } = useMessaging();
   const nav = "flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] font-medium text-muted-foreground";
   const active = { className: `${nav} !text-primary` };
   return (
     <div className={`mx-auto flex min-h-screen flex-col bg-background ${wide ? "max-w-4xl" : "max-w-md"}`}>
-      <header className="sticky top-0 z-10 flex items-center justify-between border-b bg-card/90 px-4 py-3 backdrop-blur">
+      <header className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b bg-card/90 px-4 py-3 backdrop-blur">
         <Link to="/" className="font-display text-2xl font-extrabold tracking-tight text-primary">briva</Link>
-        {title && <span className="text-sm font-semibold text-muted-foreground">{title}</span>}
+        <div className="flex items-center gap-3">
+          {title && <span className="text-sm font-semibold text-muted-foreground">{title}</span>}
+          {me && (
+            <Link to="/messages" search={{}} aria-label={unread ? `Messages, ${unread} unread` : "Messages"} className="relative p-1 text-foreground">
+              <Send size={22} />
+              {unread > 0 && <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">{unread > 99 ? "99+" : unread}</span>}
+            </Link>
+          )}
+        </div>
       </header>
       <main className="flex-1 pb-[calc(5rem+env(safe-area-inset-bottom))]">{children}</main>
       <nav className={`fixed inset-x-0 bottom-0 z-20 mx-auto flex border-t bg-card pb-[env(safe-area-inset-bottom)] ${wide ? "max-w-4xl" : "max-w-md"}`}>
@@ -69,8 +83,9 @@ export function PostCard({ post }: { post: Post }) {
       {open && (
         <div className="mt-3 space-y-2">
           {post.comments.map((c) => (
-            <div key={c.id} className="rounded-xl bg-secondary px-3 py-2 text-sm">
-              <span className="font-semibold">@{c.author}</span> {c.text}
+            <div key={c.id} className="flex items-start gap-2">
+              <Avatar user={users.find((u) => u.username === c.author)} size={28} />
+              <div className="flex-1 rounded-xl bg-secondary px-3 py-2 text-sm"><span className="font-semibold">@{c.author}</span> {c.text}</div>
             </div>
           ))}
           {me ? (
