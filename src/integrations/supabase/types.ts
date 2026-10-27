@@ -425,6 +425,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_reuse_reel_sound: { Args: { _source: string }; Returns: boolean }
       can_view_member_content: { Args: { _owner: string }; Returns: boolean }
       can_view_post: { Args: { _post: string }; Returns: boolean }
       is_participant: {

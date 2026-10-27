@@ -1,0 +1,4 @@
+CREATE FUNCTION public.can_reuse_reel_sound(_source uuid) RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$ SELECT EXISTS (SELECT 1 FROM public.reels WHERE id = _source AND sound_reel_id IS NULL AND public.can_view_member_content(author_id)) $$;
+REVOKE ALL ON FUNCTION public.can_reuse_reel_sound(uuid) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.can_reuse_reel_sound(uuid) TO authenticated, service_role;
+ALTER POLICY "create own reel" ON public.reels WITH CHECK (author_id = auth.uid() AND video_path LIKE auth.uid()::text || '/%' AND (sound_reel_id IS NULL OR public.can_reuse_reel_sound(sound_reel_id)));
