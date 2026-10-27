@@ -50,6 +50,20 @@
       "when": 1792990298769,
       "tag": "0006_realtime_profile_privacy",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1793069761500,
+      "tag": "0007_member_reels",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1793070116185,
+      "tag": "0008_reel_sound_access",
+      "breakpoints": true
     }
   ]
 }

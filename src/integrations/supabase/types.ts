@@ -274,6 +274,120 @@ export type Database = {
         }
         Relationships: []
       }
+      reel_comments: {
+        Row: {
+          author_id: string
+          created_at: string
+          id: string
+          reel_id: string
+          text: string
+        }
+        Insert: {
+          author_id: string
+          created_at?: string
+          id?: string
+          reel_id: string
+          text: string
+        }
+        Update: {
+          author_id?: string
+          created_at?: string
+          id?: string
+          reel_id?: string
+          text?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reel_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reel_comments_reel_id_fkey"
+            columns: ["reel_id"]
+            isOneToOne: false
+            referencedRelation: "reels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reel_likes: {
+        Row: {
+          reel_id: string
+          user_id: string
+        }
+        Insert: {
+          reel_id: string
+          user_id: string
+        }
+        Update: {
+          reel_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reel_likes_reel_id_fkey"
+            columns: ["reel_id"]
+            isOneToOne: false
+            referencedRelation: "reels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reel_likes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reels: {
+        Row: {
+          author_id: string
+          caption: string
+          created_at: string
+          duration_seconds: number
+          id: string
+          sound_reel_id: string | null
+          video_path: string
+        }
+        Insert: {
+          author_id: string
+          caption?: string
+          created_at?: string
+          duration_seconds: number
+          id?: string
+          sound_reel_id?: string | null
+          video_path: string
+        }
+        Update: {
+          author_id?: string
+          caption?: string
+          created_at?: string
+          duration_seconds?: number
+          id?: string
+          sound_reel_id?: string | null
+          video_path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reels_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reels_sound_reel_id_fkey"
+            columns: ["sound_reel_id"]
+            isOneToOne: false
+            referencedRelation: "reels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       stories: {
         Row: {
           created_at: string
@@ -311,6 +425,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_reuse_reel_sound: { Args: { _source: string }; Returns: boolean }
       can_view_member_content: { Args: { _owner: string }; Returns: boolean }
       can_view_post: { Args: { _post: string }; Returns: boolean }
       is_participant: {
