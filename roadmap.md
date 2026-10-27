@@ -1,4 +1,5 @@
 # Briva roadmap
+- [ ] Add and verify home Reels: 15–60-second videos, likes, comments, sharing and member-sound selection
 - [ ] Add groups with creator-selected joining rules, member posts and admin approvals
 - [ ] Add marketplace listings with price and location
 - [ ] Add English / Swahili / Sheng language selection
