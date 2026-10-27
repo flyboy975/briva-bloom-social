@@ -163,3 +163,7 @@
 .story-progress::-webkit-progress-bar { background: color-mix(in oklab, var(--story-foreground) 30%, transparent); }
 .story-progress::-webkit-progress-value { background: var(--story-foreground); }
 .story-progress::-moz-progress-bar { background: var(--story-foreground); }
+
+.reel-scroll, .reel-slide { height: max(320px, calc(100dvh - 220px - env(safe-area-inset-bottom))); }
+.reel-shade { background: linear-gradient(to bottom, color-mix(in oklab, var(--story-background) 25%, transparent), transparent 30%, transparent 55%, color-mix(in oklab, var(--story-background) 90%, transparent)); }
+@media (prefers-reduced-motion: reduce) { .reel-scroll { scroll-behavior: auto; } }
