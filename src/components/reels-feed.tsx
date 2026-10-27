@@ -20,6 +20,7 @@ function ReelPlayer({ reel, sound, onLike, onComment, onShare }: { reel: Reel; s
   const [visible, setVisible] = useState(false);
   const [failed, setFailed] = useState(false);
   const active = visible && !paused;
+  useEffect(() => { if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) setPaused(true); }, []);
   useEffect(() => {
     const node = section.current; if (!node) return;
     const observer = new IntersectionObserver(([entry]) => setVisible(Boolean(entry?.isIntersecting && entry.intersectionRatio >= 0.6)), { threshold: [0, 0.6, 1] });
@@ -39,7 +40,7 @@ function ReelPlayer({ reel, sound, onLike, onComment, onShare }: { reel: Reel; s
   }, [active, muted]);
   const liked = Boolean(me && reel.likes.includes(me.id));
   return <article ref={section} id={`reel-${reel.id}`} className="reel-slide relative isolate snap-start snap-always overflow-hidden bg-story-background text-story-foreground" aria-label={`Reel by ${author?.username ?? "member"}`}>
-    <video ref={video} src={reel.url} muted={sound ? true : muted} loop playsInline preload="metadata" className="absolute inset-0 h-full w-full object-contain" onError={() => setFailed(true)} onTimeUpdate={() => { if (audio.current && video.current?.currentTime === 0) audio.current.currentTime = 0; }} />
+    <video ref={video} src={reel.url} muted={sound ? true : muted} loop playsInline preload="metadata" className="absolute inset-0 h-full w-full object-contain" onError={() => setFailed(true)} onTimeUpdate={() => { const track = audio.current; const clip = video.current; if (track && clip && Number.isFinite(track.duration) && track.duration > 0 && Math.abs(track.currentTime - clip.currentTime % track.duration) > 0.5) track.currentTime = clip.currentTime % track.duration; }} />
     {sound && <video ref={audio} src={sound.url} loop preload="metadata" className="hidden" />}
     <div className="reel-shade pointer-events-none absolute inset-0" />
     <div className="absolute left-3 top-3 flex gap-2"><Button variant="ghost" size="icon" className="bg-story-background/60 text-story-foreground" aria-label={paused ? "Play video" : "Pause video"} onClick={() => setPaused(!paused)}>{paused ? <Play /> : <Pause />}</Button><Button variant="ghost" size="icon" className="bg-story-background/60 text-story-foreground" aria-label={muted ? "Unmute video" : "Mute video"} onClick={() => setMuted(!muted)}>{muted ? <VolumeX /> : <Volume2 />}</Button></div>

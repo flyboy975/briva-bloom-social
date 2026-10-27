@@ -211,7 +211,7 @@ export async function signMany(bucket: string, paths: string[]) {
   const out = new Map<string, string>();
   const uniq = [...new Set(paths)];
   if (!uniq.length) return out;
-  const { data } = await supabase.storage.from(bucket).createSignedUrls(uniq, bucket === "post-images" ? 60 : 60 * 60 * 24);
+  const { data } = await supabase.storage.from(bucket).createSignedUrls(uniq, bucket === "post-images" || bucket === "reel-videos" ? 60 : 60 * 60 * 24);
   data?.forEach((d) => { if (d.path && d.signedUrl) out.set(d.path, d.signedUrl); });
   return out;
 }
