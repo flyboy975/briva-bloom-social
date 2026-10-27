@@ -8,7 +8,7 @@ import { useStore } from "@/lib/store";
 import { useReels, type Reel } from "@/lib/reels";
 import { ReelUpload } from "@/components/reel-upload";
 
-function ReelPlayer({ reel, sound, onLike, onComment, onShare }: { reel: Reel; sound?: Reel; onLike: () => void; onComment: () => void; onShare: () => void }) {
+function ReelPlayer({ reel, sound, onLike, onComment, onShare }: { reel: Reel; sound?: Reel | undefined; onLike: () => void; onComment: () => void; onShare: () => void }) {
   const { users, me } = useStore();
   const author = users.find((u) => u.id === reel.author_id);
   const source = sound ? users.find((u) => u.id === sound.author_id) : author;
@@ -53,7 +53,7 @@ function ReelPlayer({ reel, sound, onLike, onComment, onShare }: { reel: Reel; s
   </article>;
 }
 
-export function ReelsFeed({ target }: { target?: string }) {
+export function ReelsFeed({ target }: { target?: string | undefined }) {
   const { me, users } = useStore();
   const { reels, loading, error, reload, setError, toggleLike, comment } = useReels();
   const [commentId, setCommentId] = useState<string | null>(null);

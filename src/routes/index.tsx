@@ -6,7 +6,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ReelsFeed } from "@/components/reels-feed";
 
 export const Route = createFileRoute("/")({
-  validateSearch: (search: Record<string, unknown>): { view?: "reels"; reel?: string } => ({ view: search.view === "reels" ? "reels" : undefined, reel: typeof search.reel === "string" ? search.reel : undefined }),
+  validateSearch: (search: Record<string, unknown>): { view?: "reels" | undefined; reel?: string | undefined } => ({ view: search['view'] === "reels" ? "reels" : undefined, reel: typeof search['reel'] === "string" ? search['reel'] : undefined }),
   head: () => ({
     meta: [
       { title: "Briva — Home feed and Reels" },
