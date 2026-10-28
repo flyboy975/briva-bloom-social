@@ -1,114 +1,39 @@
-import { Link, useNavigate } from "@tanstack/react-router";import { Home, PlusSquare, Clapperboard } from "lucide-react"
-import { Bell, Heart, Home, MessageCircle, PlusSquare, Send, User as UserIcon, LogIn } from "lucide-react";import { Home, PlusSquare, UserIcon, LogIn, Send, Clapperboard } from "lucide-react"
-import { useState, type ReactNode } from "react";
-import { timeAgo, useStore, type Post, type User } from "@/lib/store";
-import { useMessaging } from "@/lib/messaging";
-import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { FriendshipActions } from "@/components/friendship-actions";
-import { pendingRequests } from "@/lib/social-rules";
+import { Link } from "@tanstack/react-router";
+import { Home, PlusSquare, User, Clapperboard, Bell, Send } from "lucide-react";
+import type { ReactNode } from "react";
 
-export function Avatar({ user, size = 40 }: { user?: User | undefined; size?: number }) {
-  const [broken, setBroken] = useState(false);
-  if (user?.avatarUrl && !broken) {
-    return <img src={user.avatarUrl} alt={user.name} onError={() => setBroken(true)} className="shrink-0 rounded-full object-cover" style={{ width: size, height: size }} />;
-  }
-  return (
-    <div
-      className="grid shrink-0 place-items-center rounded-full font-bold text-primary-foreground"
-      style={{ width: size, height: size, background: user?.avatarColor ?? "var(--primary)", fontSize: size * 0.4 }}
-    >
-      {(user?.name ?? "?").charAt(0).toUpperCase()}
-    </div>
-  );
-}
+const nav = "flex flex-col items-center justify-center gap-1 text-xs text-zinc-500";
+const active = { className: "flex flex-col items-center justify-center gap-1 text-xs text-blue-600 font-semibold" };
 
-export function Shell({ children, title, wide = false }: { children: ReactNode; title?: string; wide?: boolean }) {
-  const { me, users, friendships } = useStore();
-  const requests = me ? pendingRequests(friendships, me.id) : [];
-  const { unread } = useMessaging();
-  const nav = "flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] font-medium text-muted-foreground";
-  const active = { className: `${nav} !text-primary` };
+export function Shell({ children, title, wide }: { children: ReactNode; title?: string; wide?: boolean }) {
   return (
-    <div className={`mx-auto flex min-h-screen flex-col bg-background ${wide ? "max-w-4xl" : "max-w-md"}`}>
-      <header className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b bg-card/90 px-4 py-3 backdrop-blur">
-        <Link to="/" className="font-display text-2xl font-extrabold tracking-tight text-primary">briva</Link>
-        <div className="flex items-center gap-3">
-          {title && <span className="text-sm font-semibold text-muted-foreground">{title}</span>}
-          {me && <Popover><PopoverTrigger asChild><Button variant="ghost" size="icon" className="relative" title="Friend requests" aria-label={`Friend requests, ${requests.length} pending`}><Bell />{requests.length > 0 && <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">{requests.length > 99 ? "99+" : requests.length}</span>}</Button></PopoverTrigger><PopoverContent align="end" className="max-h-[70dvh] w-80 max-w-[calc(100vw-2rem)] overflow-y-auto"><h2 className="mb-3 font-semibold">Friend requests</h2>{!requests.length && <p className="text-sm text-muted-foreground">No pending requests.</p>}{requests.map((request) => { const person = users.find((u) => u.id === request.requester_id); return <div key={request.id} className="space-y-3 border-t py-3"><Link to="/u/$username" params={{ username: person?.username ?? "unknown" }} className="flex min-w-0 items-center gap-2"><Avatar user={person} size={32} /><span className="truncate text-sm font-semibold">{person?.name ?? "Member"}</span></Link><FriendshipActions otherId={request.requester_id} /></div>; })}</PopoverContent></Popover>}
-          {me && (
-            <Link to="/messages" search={{}} aria-label={unread ? `Messages, ${unread} unread` : "Messages"} className="relative p-1 text-foreground">
-              <Send size={22} />
-              {unread > 0 && <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">{unread > 99 ? "99+" : unread}</span>}
-            </Link>
-          )}
+    <div className="min-h-screen bg-white flex flex-col">
+      <header className="sticky top-0 z-20 bg-white border-b px-4 py-3 flex items-center justify-between">
+        <Link to="/" className="text-3xl font-black text-blue-600 tracking-tight">briva</Link>
+        <div className="flex items-center gap-4">
+          <Bell className="w-6 h-6" />
+          <Send className="w-6 h-6" />
         </div>
       </header>
-      <main className="flex-1 pb-[calc(5rem+env(safe-area-inset-bottom))]">{children}</main>
-      <nav className={`fixed inset-x-0 bottom-0 z-20 mx-auto flex border-t bg-card pb-[env(safe-area-inset-bottom)] ${wide ? "max-w-4xl" : "max-w-md"}`}>
-        <Link to="/" className={nav} activeProps={active} activeOptions={{ exact: true }}><Home size={22} />Home</Link>
-        <Link to="/" className={nav} activeProps={active} activeOptions={{ exact: true }}><Home size={22} />Home</Link>
-<Link to="/reels" className={nav} activeProps={active}><Clapperboard size={22} />Reels</Link><Link to="/reels" className={nav} activeProps={active}><Clapperboard size={22} />Reels</Link>
-<Link to="/create" className={nav} activeProps={active}><PlusSquare size={22} />Post</Link>
-        {me ? (
-          <Link to="/u/$username" params={{ username: me.username }} className={nav} activeProps={active}><UserIcon size={22} />Profile</Link>
-        ) : (
-          <Link to="/login" className={nav} activeProps={active}><LogIn size={22} />Log in</Link>
-        )}
+
+      <main className={wide ? "flex-1 w-full" : "flex-1 max-w-[600px] w-full mx-auto"}>
+        {children}
+      </main>
+
+      <nav className="sticky bottom-0 z-20 bg-white border-t flex justify-around py-2">
+        <Link to="/" className={nav} activeProps={active} activeOptions={{ exact: true }}>
+          <Home size={22} />Home
+        </Link>
+        <Link to="/reels" className={nav} activeProps={active}>
+          <Clapperboard size={22} />Reels
+        </Link>
+        <Link to="/create" className={nav} activeProps={active}>
+          <PlusSquare size={22} />Post
+        </Link>
+        <Link to="/profile" className={nav} activeProps={active}>
+          <User size={22} />Profile
+        </Link>
       </nav>
     </div>
   );
 }
-
-export function PostCard({ post }: { post: Post }) {
-  const { users, me, toggleLike, addComment } = useStore();
-  const navigate = useNavigate();
-  const [open, setOpen] = useState(false);
-  const [text, setText] = useState("");
-  const author = users.find((u) => u.username === post.author);
-  const liked = !!me && post.likes.includes(me.username);
-  const needAuth = () => navigate({ to: "/login" });
-
-  return (
-    <article className="border-b bg-card px-4 py-4">
-      <Link to="/u/$username" params={{ username: post.author }} className="flex items-center gap-3">
-        <Avatar user={author} />
-        <div>
-          <div className="text-sm font-semibold">{author?.name}</div>
-          <div className="text-xs text-muted-foreground">@{post.author} · {timeAgo(post.createdAt)}</div>
-        </div>
-      </Link>
-      <p className="mt-3 whitespace-pre-wrap text-[15px] leading-relaxed">{post.text}</p>
-      {post.image && <img src={post.image} alt="" className="mt-3 w-full rounded-xl object-cover" loading="lazy" />}
-      <div className="mt-3 flex gap-6 text-sm text-muted-foreground">
-        <button onClick={() => (me ? toggleLike(post.id) : needAuth())} className={`flex items-center gap-1.5 ${liked ? "text-primary" : ""}`} aria-label="Like">
-          <Heart size={20} fill={liked ? "currentColor" : "none"} /> {post.likes.length}
-        </button>
-        <button onClick={() => setOpen(!open)} className="flex items-center gap-1.5" aria-label="Comments">
-          <MessageCircle size={20} /> {post.comments.length}
-        </button>
-      </div>
-      {open && (
-        <div className="mt-3 space-y-2">
-          {post.comments.map((c) => (
-            <div key={c.id} className="flex items-start gap-2">
-              <Avatar user={users.find((u) => u.username === c.author)} size={28} />
-              <div className="flex-1 rounded-xl bg-secondary px-3 py-2 text-sm"><span className="font-semibold">@{c.author}</span> {c.text}</div>
-            </div>
-          ))}
-          {me ? (
-            <form onSubmit={(e) => { e.preventDefault(); addComment(post.id, text); setText(""); }} className="flex gap-2">
-              <input value={text} onChange={(e) => setText(e.target.value)} placeholder="Write a comment…" className="flex-1 rounded-full border bg-background px-4 py-2 text-sm outline-none focus:border-primary" />
-              <button className="rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground">Send</button>
-            </form>
-          ) : (
-            <Link to="/login" className="text-sm font-medium text-primary">Log in to comment</Link>
-          )}
-        </div>
-      )}
-    </article>
-  );
-}
-
-export const inputCls = "w-full rounded-xl border bg-background px-4 py-3 text-[15px] outline-none focus:border-primary";
-export const btnCls = "w-full rounded-xl bg-primary py-3 font-semibold text-primary-foreground shadow-brand active:scale-[0.99] disabled:opacity-50";
