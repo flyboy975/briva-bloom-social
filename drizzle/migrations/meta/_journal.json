@@ -64,6 +64,13 @@
       "when": 1793070116185,
       "tag": "0008_reel_sound_access",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1793165014113,
+      "tag": "0009_groups_marketplace_events",
+      "breakpoints": true
     }
   ]
 }
