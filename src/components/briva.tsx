@@ -48,7 +48,7 @@ export function Shell({ children, title, wide = false }: { children: ReactNode; 
       <nav className={`fixed inset-x-0 bottom-0 z-20 mx-auto flex border-t bg-card pb-[env(safe-area-inset-bottom)] ${wide ? "max-w-4xl" : "max-w-md"}`}>
         <Link to="/" className={nav} activeProps={active} activeOptions={{ exact: true }}><Home size={22} />Home</Link>
         <Link to="/" className={nav} activeProps={active} activeOptions={{ exact: true }}><Home size={22} />Home</Link>
-<Link to="/reels" className={nav} activeProps={active}><Clapperboard size={22} />Reels</Link>
+<Link to="/reels" className={nav} activeProps={active}><Clapperboard size={22} />Reels</Link><Link to="/reels" className={nav} activeProps={active}><Clapperboard size={22} />Reels</Link>
 <Link to="/create" className={nav} activeProps={active}><PlusSquare size={22} />Post</Link>
         {me ? (
           <Link to="/u/$username" params={{ username: me.username }} className={nav} activeProps={active}><UserIcon size={22} />Profile</Link>
