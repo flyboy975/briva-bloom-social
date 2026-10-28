@@ -11,9 +11,13 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CreateRouteImport } from './routes/create'
+import { Route as EventsRouteImport } from './routes/events'
+import { Route as GroupsRouteImport } from './routes/groups'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as MarketplaceRouteImport } from './routes/marketplace'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as GroupsGroupIdRouteImport } from './routes/groups.$groupId'
 import { Route as UUsernameRouteImport } from './routes/u.$username'
 
 const IndexRoute = IndexRouteImport.update({
@@ -26,9 +30,24 @@ const CreateRoute = CreateRouteImport.update({
   path: '/create',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EventsRoute = EventsRouteImport.update({
+  id: '/events',
+  path: '/events',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GroupsRoute = GroupsRouteImport.update({
+  id: '/groups',
+  path: '/groups',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarketplaceRoute = MarketplaceRouteImport.update({
+  id: '/marketplace',
+  path: '/marketplace',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MessagesRoute = MessagesRouteImport.update({
@@ -41,6 +60,11 @@ const SignupRoute = SignupRouteImport.update({
   path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GroupsGroupIdRoute = GroupsGroupIdRouteImport.update({
+  id: '/$groupId',
+  path: '/$groupId',
+  getParentRoute: () => GroupsRoute,
+} as any)
 const UUsernameRoute = UUsernameRouteImport.update({
   id: '/u/$username',
   path: '/u/$username',
@@ -50,48 +74,86 @@ const UUsernameRoute = UUsernameRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/create': typeof CreateRoute
+  '/events': typeof EventsRoute
+  '/groups': typeof GroupsRouteWithChildren
   '/login': typeof LoginRoute
+  '/marketplace': typeof MarketplaceRoute
   '/messages': typeof MessagesRoute
   '/signup': typeof SignupRoute
+  '/groups/$groupId': typeof GroupsGroupIdRoute
   '/u/$username': typeof UUsernameRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/create': typeof CreateRoute
+  '/events': typeof EventsRoute
+  '/groups': typeof GroupsRouteWithChildren
   '/login': typeof LoginRoute
+  '/marketplace': typeof MarketplaceRoute
   '/messages': typeof MessagesRoute
   '/signup': typeof SignupRoute
+  '/groups/$groupId': typeof GroupsGroupIdRoute
   '/u/$username': typeof UUsernameRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/create': typeof CreateRoute
+  '/events': typeof EventsRoute
+  '/groups': typeof GroupsRouteWithChildren
   '/login': typeof LoginRoute
+  '/marketplace': typeof MarketplaceRoute
   '/messages': typeof MessagesRoute
   '/signup': typeof SignupRoute
+  '/groups/$groupId': typeof GroupsGroupIdRoute
   '/u/$username': typeof UUsernameRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/create' | '/login' | '/messages' | '/signup' | '/u/$username'
+    | '/'
+    | '/create'
+    | '/events'
+    | '/groups'
+    | '/login'
+    | '/marketplace'
+    | '/messages'
+    | '/signup'
+    | '/groups/$groupId'
+    | '/u/$username'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/create' | '/login' | '/messages' | '/signup' | '/u/$username'
+  to:
+    | '/'
+    | '/create'
+    | '/events'
+    | '/groups'
+    | '/login'
+    | '/marketplace'
+    | '/messages'
+    | '/signup'
+    | '/groups/$groupId'
+    | '/u/$username'
   id:
     | '__root__'
     | '/'
     | '/create'
+    | '/events'
+    | '/groups'
     | '/login'
+    | '/marketplace'
     | '/messages'
     | '/signup'
+    | '/groups/$groupId'
     | '/u/$username'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CreateRoute: typeof CreateRoute
+  EventsRoute: typeof EventsRoute
+  GroupsRoute: typeof GroupsRouteWithChildren
   LoginRoute: typeof LoginRoute
+  MarketplaceRoute: typeof MarketplaceRoute
   MessagesRoute: typeof MessagesRoute
   SignupRoute: typeof SignupRoute
   UUsernameRoute: typeof UUsernameRoute
@@ -113,11 +175,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CreateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/events': {
+      id: '/events'
+      path: '/events'
+      fullPath: '/events'
+      preLoaderRoute: typeof EventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/groups': {
+      id: '/groups'
+      path: '/groups'
+      fullPath: '/groups'
+      preLoaderRoute: typeof GroupsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/marketplace': {
+      id: '/marketplace'
+      path: '/marketplace'
+      fullPath: '/marketplace'
+      preLoaderRoute: typeof MarketplaceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/messages': {
@@ -134,6 +217,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignupRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/groups/$groupId': {
+      id: '/groups/$groupId'
+      path: '/$groupId'
+      fullPath: '/groups/$groupId'
+      preLoaderRoute: typeof GroupsGroupIdRouteImport
+      parentRoute: typeof GroupsRoute
+    }
     '/u/$username': {
       id: '/u/$username'
       path: '/u/$username'
@@ -144,10 +234,24 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface GroupsRouteChildren {
+  GroupsGroupIdRoute: typeof GroupsGroupIdRoute
+}
+
+const GroupsRouteChildren: GroupsRouteChildren = {
+  GroupsGroupIdRoute: GroupsGroupIdRoute,
+}
+
+const GroupsRouteWithChildren =
+  GroupsRoute._addFileChildren(GroupsRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CreateRoute: CreateRoute,
+  EventsRoute: EventsRoute,
+  GroupsRoute: GroupsRouteWithChildren,
   LoginRoute: LoginRoute,
+  MarketplaceRoute: MarketplaceRoute,
   MessagesRoute: MessagesRoute,
   SignupRoute: SignupRoute,
   UUsernameRoute: UUsernameRoute,
