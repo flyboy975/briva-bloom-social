@@ -92,6 +92,36 @@ export type Database = {
           },
         ]
       }
+      events: {
+        Row: {
+          created_at: string
+          creator_id: string
+          description: string
+          id: string
+          location: string
+          starts_at: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          creator_id: string
+          description?: string
+          id?: string
+          location: string
+          starts_at: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          creator_id?: string
+          description?: string
+          id?: string
+          location?: string
+          starts_at?: string
+          title?: string
+        }
+        Relationships: []
+      }
       friendships: {
         Row: {
           created_at: string
@@ -130,6 +160,136 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      group_members: {
+        Row: {
+          created_at: string
+          group_id: string
+          id: string
+          role: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          group_id: string
+          id?: string
+          role?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          group_id?: string
+          id?: string
+          role?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_members_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      group_posts: {
+        Row: {
+          author_id: string
+          created_at: string
+          group_id: string
+          id: string
+          text: string
+        }
+        Insert: {
+          author_id: string
+          created_at?: string
+          group_id: string
+          id?: string
+          text: string
+        }
+        Update: {
+          author_id?: string
+          created_at?: string
+          group_id?: string
+          id?: string
+          text?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_posts_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      groups: {
+        Row: {
+          created_at: string
+          creator_id: string
+          description: string
+          id: string
+          join_policy: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          creator_id: string
+          description?: string
+          id?: string
+          join_policy?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          creator_id?: string
+          description?: string
+          id?: string
+          join_policy?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      marketplace_listings: {
+        Row: {
+          created_at: string
+          currency: string
+          description: string
+          id: string
+          location: string
+          price_cents: number
+          seller_id: string
+          status: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          description?: string
+          id?: string
+          location: string
+          price_cents: number
+          seller_id: string
+          status?: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          description?: string
+          id?: string
+          location?: string
+          price_cents?: number
+          seller_id?: string
+          status?: string
+          title?: string
+        }
+        Relationships: []
       }
       messages: {
         Row: {
@@ -428,6 +588,14 @@ export type Database = {
       can_reuse_reel_sound: { Args: { _source: string }; Returns: boolean }
       can_view_member_content: { Args: { _owner: string }; Returns: boolean }
       can_view_post: { Args: { _post: string }; Returns: boolean }
+      is_group_admin: {
+        Args: { _group_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_group_member: {
+        Args: { _group_id: string; _user_id: string }
+        Returns: boolean
+      }
       is_participant: {
         Args: { _conv: string; _user: string }
         Returns: boolean
