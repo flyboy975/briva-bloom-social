@@ -1,14 +1,18 @@
-# Welcome to your Lovable project
+# Briva Bloom Social
+
+Build a mobile-first social networking web app called Briva for everyone. Use a clean blue and white design, with a responsive Android-phone layout. Create a home feed, sign-up and login screens, user profiles, a create-post form, and like and comment buttons. Use sample posts initially. Make the navigation work and explain how to connect secure user authentication, a database, and image storage. Make it suitable for installation on an Android home screen as a PWA. Do not copy Facebook's logo or branding.
 
 This project was built with [Lovable](https://lovable.dev).
 
+**Live app**: https://briva-bloom-social.lovable.app
+
 ## Build with Lovable
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
+Continue developing this project in the [Lovable editor](https://lovable.dev/projects/0728d4fd-1a04-4242-acbb-184e2495a08f).
 
 - **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+- **Stay in sync**: every change made in Lovable is committed straight to this repository.
+- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
 
 ## Development
 
@@ -20,10 +24,3 @@ cd <repository-name>
 npm i
 npm run dev
 ```
-
-## Built with
-
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS
