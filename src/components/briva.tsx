@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Bell, Heart, Home, MessageCircle, PlusSquare, Send, User as UserIcon, LogIn } from "lucide-react";
+import { Bell, Heart, Home, MessageCircle, PlusSquare, Send, User as UserIcon, LogIn } from "lucide-react";import { Home, PlusSquare, UserIcon, LogIn, Send, Clapperboard } from "lucide-react"
 import { useState, type ReactNode } from "react";
 import { timeAgo, useStore, type Post, type User } from "@/lib/store";
 import { useMessaging } from "@/lib/messaging";
