@@ -36,4 +36,3 @@ export function Shell({ children, title, wide }: { children: ReactNode; title?: 
       </nav>
     </div>
   );
-}
