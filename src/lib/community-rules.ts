@@ -1,5 +1,5 @@
 export type JoinPolicy = "open" | "approval";
-export type Membership = { role: "admin" | "member"; status: "pending" | "approved" } | null | undefined;
+export type Membership = { role: string; status: string } | null | undefined;
 
 export function groupNameError(name: string) {
   const trimmed = name.trim();
