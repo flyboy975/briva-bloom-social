@@ -6,7 +6,7 @@ import { useStore, timeAgo } from "@/lib/store";
 import { useGroups, useGroupPosts } from "@/lib/community";
 import { canApproveMembers, canPostInGroup } from "@/lib/community-rules";
 
-export const Route = createFileRoute("/groups_/$groupId")({
+export const Route = createFileRoute("/groups/$groupId")({
   head: () => ({
     meta: [
       { title: "Briva — Group" },
