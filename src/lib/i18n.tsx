@@ -16,6 +16,7 @@ const dict = {
     loginOrSignup: "Log in or sign up", noPosts: "No posts yet. Be the first!", loadingPosts: "Loading posts…",
     posts: "Posts", reels: "Reels", join: "Join", pending: "Pending", create: "Create", cancel: "Cancel",
     membersOnlyPage: "This page is for members only. Log in or sign up to continue.",
+    noRequests: "No pending requests", like: "Like", comment: "Comment", writeComment: "Write a comment…", send: "Send",
   },
   sw: {
     home: "Nyumbani", post: "Chapisha", groups: "Vikundi", market: "Soko", events: "Matukio", profile: "Wasifu", login: "Ingia",
@@ -25,6 +26,7 @@ const dict = {
     loginOrSignup: "Ingia au jisajili", noPosts: "Hakuna machapisho bado. Kuwa wa kwanza!", loadingPosts: "Inapakia machapisho…",
     posts: "Machapisho", reels: "Reels", join: "Jiunge", pending: "Inasubiri", create: "Tengeneza", cancel: "Ghairi",
     membersOnlyPage: "Ukurasa huu ni kwa wanachama pekee. Ingia au jisajili kuendelea.",
+    noRequests: "Hakuna maombi yanayosubiri", like: "Penda", comment: "Maoni", writeComment: "Andika maoni…", send: "Tuma",
   },
   sheng: {
     home: "Home", post: "Post", groups: "Mbogi", market: "Soko", events: "Rada", profile: "Profaili", login: "Ingia",
@@ -34,6 +36,7 @@ const dict = {
     loginOrSignup: "Ingia ama sign up", noPosts: "Bado hakuna post. Kuwa wa kwanza!", loadingPosts: "Inaload posts…",
     posts: "Post", reels: "Reels", join: "Join", pending: "Inangoja", create: "Tengeneza", cancel: "Achana",
     membersOnlyPage: "Hii page ni ya members tu. Ingia ama sign up uendelee.",
+    noRequests: "Hakuna request zinangoja", like: "Like", comment: "Comment", writeComment: "Weka comment…", send: "Tuma",
   },
 } as const;
 
@@ -49,6 +52,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     const saved = window.localStorage.getItem(KEY);
     if (saved === "en" || saved === "sw" || saved === "sheng") setLangState(saved);
   }, []);
+  useEffect(() => { document.documentElement.lang = lang === "sheng" ? "sw" : lang; }, [lang]);
   const setLang = (next: Lang) => {
     setLangState(next);
     window.localStorage.setItem(KEY, next);
