@@ -16,6 +16,7 @@ import { StoreProvider } from "../lib/store";
 import { registerServiceWorker } from "../lib/pwa";
 import { InstallPrompt } from "../components/install-prompt";
 import { MessagingProvider } from "@/lib/messaging";
+import { LanguageProvider } from "@/lib/i18n";
 
 function NotFoundComponent() {
   return (
@@ -126,12 +127,14 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <LanguageProvider>
       <StoreProvider>
         <MessagingProvider>
         <Outlet />
         <InstallPrompt />
         </MessagingProvider>
       </StoreProvider>
+      </LanguageProvider>
     </QueryClientProvider>
   );
 }
