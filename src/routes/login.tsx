@@ -28,7 +28,6 @@ function Login() {
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
   const [err, setErr] = useState("");
-  const [sent, setSent] = useState(false);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => { if (me) nav({ to: "/" }); }, [me, nav]);
@@ -40,7 +39,7 @@ function Login() {
   };
 
   const tab = (m: "login" | "signup", label: string) => (
-    <button type="button" onClick={() => { setMode(m); setErr(""); setSent(false); }}
+    <button type="button" onClick={() => { setMode(m); setErr(""); }}
       className={`flex-1 rounded-lg py-2 text-sm font-semibold ${mode === m ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}`}>{label}</button>
   );
 
@@ -56,12 +55,6 @@ function Login() {
       }}>
         <div className="flex gap-1 rounded-xl bg-secondary p-1">{tab("login", "Log in")}{tab("signup", "Sign up")}</div>
         <h1 className="font-display text-3xl font-extrabold">{mode === "login" ? "Welcome back" : "Join Briva"}</h1>
-        {sent ? (
-          <p className="rounded-xl bg-accent p-4 text-sm text-accent-foreground">
-            Almost there! We sent a confirmation link to <b>{email}</b>. Open it to activate your account, then log in.
-          </p>
-        ) : (
-          <>
             {mode === "signup" && <input className={inputCls} placeholder="Full name" value={name} onChange={(e) => setName(e.target.value)} required />}
             {mode === "signup" && <input className={inputCls} placeholder="Username" autoCapitalize="none" value={u} onChange={(e) => setU(e.target.value)} required />}
             <input className={inputCls} type="email" placeholder="Email" autoCapitalize="none" value={email} onChange={(e) => setEmail(e.target.value)} required />
@@ -71,8 +64,6 @@ function Login() {
             <div className="flex items-center gap-3 text-xs text-muted-foreground"><span className="h-px flex-1 bg-border" />or<span className="h-px flex-1 bg-border" /></div>
             <button type="button" onClick={() => oauth("google")} className="w-full rounded-xl border bg-card py-3 font-semibold">Continue with Google</button>
             <button type="button" className="lovable-auth-button w-full" onClick={() => oauth("lovable")}>Continue with Lovable</button>
-          </>
-        )}
       </form>
     </Shell>
   );

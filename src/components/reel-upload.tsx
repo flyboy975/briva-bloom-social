@@ -20,6 +20,7 @@ export function ReelUpload({ reels, onDone }: { reels: Reel[]; onDone: () => Pro
   const audio = useRef<HTMLVideoElement>(null);
   const sounds = reels.filter((r) => !r.sound_reel_id).sort((a, b) => b.likes.length - a.likes.length);
   const selected = sounds.find((r) => r.id === sound);
+  useEffect(() => { const player = audio.current; return () => { player?.pause(); }; }, [sound, open]);
   useEffect(() => { if (!file) { setPreview(""); return; } const url = URL.createObjectURL(file); setPreview(url); return () => URL.revokeObjectURL(url); }, [file]);
   return <>
     <Button size="sm" onClick={() => setOpen(true)}><Plus size={16} />Create Reel</Button>
@@ -38,7 +39,8 @@ export function ReelUpload({ reels, onDone }: { reels: Reel[]; onDone: () => Pro
             if (up.error) throw new Error("Video upload failed. Try again.");
             const result = await supabase.from("reels").insert({ author_id: me.id, video_path: path, caption: caption.trim(), duration_seconds: duration, sound_reel_id: selected?.id ?? null });
             if (result.error) { await supabase.storage.from("reel-videos").remove([path]); throw new Error("Your Reel could not be saved. Try again."); }
-            await onDone(); setOpen(false); setFile(undefined); setCaption(""); setSound(""); setDuration(0);
+            setOpen(false); setFile(undefined); setCaption(""); setSound(""); setDuration(0);
+            await onDone().catch(() => undefined);
           } catch (err) { setError(err instanceof Error ? err.message : "Upload failed. Try again."); } finally { setBusy(false); }
         }}>
           <label className="block text-sm font-medium">Video<input disabled={busy} aria-label="Reel video" type="file" accept="video/mp4,video/webm,video/quicktime" className="mt-2 block w-full text-sm" onChange={(e) => { const next = e.target.files?.[0]; setDuration(0); setError(next ? reelFileError(next) ?? "" : ""); setFile(next); }} /></label>

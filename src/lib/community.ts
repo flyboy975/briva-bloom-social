@@ -11,13 +11,14 @@ export type Listing = Database["public"]["Tables"]["marketplace_listings"]["Row"
 export type CommunityEvent = Database["public"]["Tables"]["events"]["Row"];
 
 function useRealtime(tables: string[], reload: () => void, userId: string | undefined) {
+  const tableKey = tables.join(",");
   useEffect(() => {
     if (!userId) return;
     let channel = supabase.channel(`community-${crypto.randomUUID()}`);
-    for (const table of tables) channel = channel.on("postgres_changes", { event: "*", schema: "public", table }, () => reload());
+    for (const table of tableKey.split(",")) channel = channel.on("postgres_changes", { event: "*", schema: "public", table }, () => reload());
     channel.subscribe();
     return () => { void supabase.removeChannel(channel); };
-  }, [reload, userId, tables]);
+  }, [reload, userId, tableKey]);
 }
 
 export function useGroups() {
@@ -61,6 +62,7 @@ export function useGroups() {
     },
     joinGroup: async (group: Group) => {
       if (!userId) return "Please log in";
+      if (members.some((m) => m.group_id === group.id && m.user_id === userId)) return "You already joined or requested to join this group.";
       const { error: err } = await supabase.from("group_members").insert({ group_id: group.id, user_id: userId, role: "member", status: joinStatusFor(group.join_policy === "approval" ? "approval" : "open") });
       if (err) return "Could not join this group. Try again.";
       await reload();
@@ -91,7 +93,7 @@ export function useGroupPosts(groupId: string) {
   const reload = useCallback(async () => {
     if (!userId) { setPosts([]); setLoading(false); return; }
     const { data, error: err } = await supabase.from("group_posts").select("*").eq("group_id", groupId).order("created_at", { ascending: false }).limit(100);
-    if (err) { setPosts([]); setLoading(false); return; }
+    if (err) { setPosts([]); setError("Group posts could not load. Try again."); setLoading(false); return; }
     setPosts(data ?? []);
     setLoading(false);
     setError("");

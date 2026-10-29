@@ -19,6 +19,8 @@ export function Avatar({ user, size = 40 }: { user?: User | undefined; size?: nu
 
 const nav = "flex min-w-0 flex-1 flex-col items-center justify-center gap-1 text-[11px] text-muted-foreground";
 const active = { className: `${nav} text-primary font-semibold` };
+export const inputCls = "w-full rounded-lg border bg-background px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-ring";
+export const btnCls = "w-full rounded-lg bg-primary px-4 py-3 font-semibold text-primary-foreground disabled:opacity-60";
 
 export function Shell({ children, title, wide }: { children: ReactNode; title?: string; wide?: boolean }) {
   const { me, users, friendships } = useStore();

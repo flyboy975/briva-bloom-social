@@ -6,7 +6,7 @@ import { useStore, timeAgo } from "@/lib/store";
 import { useGroups, useGroupPosts } from "@/lib/community";
 import { canApproveMembers, canPostInGroup } from "@/lib/community-rules";
 
-export const Route = createFileRoute("/groups/$groupId")({
+export const Route = createFileRoute("/groups_/$groupId")({
   head: () => ({
     meta: [
       { title: "Briva — Group" },
@@ -24,7 +24,7 @@ function GroupPage() {
   const { groupId } = Route.useParams();
   const { me, users } = useStore();
   const { groups, members, loading, joinGroup, approveMember, removeMember, membershipOf } = useGroups();
-  const { posts, loading: postsLoading, addPost } = useGroupPosts(groupId);
+  const { posts, loading: postsLoading, error: postsError, addPost } = useGroupPosts(groupId);
   const [text, setText] = useState("");
   const [error, setError] = useState("");
 
@@ -70,7 +70,7 @@ function GroupPage() {
           {membership?.status === "pending" && <p className="mt-3 text-sm text-muted-foreground">Your request is waiting for an admin's approval.</p>}
         </div>
       )}
-      {error && <p role="alert" className="p-4 text-sm text-destructive">{error}</p>}
+      {(error || postsError) && <p role="alert" className="p-4 text-sm text-destructive">{error || postsError}</p>}
 
       {canApproveMembers(membership) && pending.length > 0 && (
         <div className="border-b bg-card px-4 py-3">
