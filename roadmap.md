@@ -1,12 +1,12 @@
 # Briva roadmap
 - [x] Finalize navigation and language picker; restore shared feed, avatars and notification controls
-- [ ] Finish community-page translations and verify group approval/decline, Reels sound/swiping, signed-out privacy and test-data cleanup
-- [ ] Add and verify home Reels: 15–60-second videos, likes, comments, sharing and member-sound selection
-- [ ] Add groups with creator-selected joining rules, member posts and admin approvals
-- [ ] Add marketplace listings with price and location
-- [ ] Add English / Swahili / Sheng language selection
-- [ ] Add worldwide events feed filtered by location
-- [ ] Verify new community flows and access rules
+- [x] Finish community-page translations and verify group approval/decline, Reels sound/swiping, signed-out privacy and test-data cleanup
+- [x] Add and verify home Reels: 15–60-second videos, likes, comments, sharing and member-sound selection
+- [x] Add groups with creator-selected joining rules, member posts and admin approvals
+- [x] Add marketplace listings with price and location
+- [x] Add English / Swahili / Sheng language selection
+- [x] Add worldwide events feed filtered by location
+- [x] Verify new community flows and access rules
 - [x] Real accounts, shared posts, likes, comments, photos (Lovable Cloud)
 - [x] End-to-end test of sign-up, posting with photo, like, comment
 - [x] Decision: stay on Lovable Cloud (no external project)
@@ -16,7 +16,7 @@
 - [x] Finish stories bar, upload, expiry, full-screen viewer
 - [x] Finish private messages, photos, unread count, realtime
 - [x] Hide Lovable badge through publishing settings
-- [ ] Verify new social flows on phone and desktop layouts
+- [x] Verify new social flows on phone and desktop layouts
 - [x] Replace signed-out profile errors with a private join prompt and verify its login/signup navigation
 - [x] Add secure friend requests and member-controlled profile privacy
 - [x] Add profile friendship controls and pending-request notifications

@@ -17,5 +17,5 @@
 - Friendship state lives in StoreProvider with effect-scoped realtime reloads; shared rules gate cached posts/stories and database policies gate reads, interactions and photo signing. Why: pending or removed friendships must never unlock private content.
 - Private profiles keep member-visible identity for friend requests, but their posts, stories and interactions require ownership or an accepted friendship; only receivers can accept and participants cannot change friendship identities. Why: enforce privacy independently of the UI.
 - Reels use a dedicated private video bucket and owner/friend-aware read policies for videos and interactions; reusable sounds reference accessible original Reels and rank by local likes, not an external music catalogue. Why: preserve member privacy and avoid unlicensed music or fake trends.
-- LanguageProvider wraps the shared app shell; navigation and common feed strings use the shared dictionary so a language choice survives navigation and refresh.
+- LanguageProvider wraps the shared app shell; navigation, feed and community-page strings use the shared dictionary so a language choice survives navigation and refresh.
 - Community pages share member-scoped data hooks; group roles stay in group_members and database policies enforce joining and posting permissions independently of the UI.
