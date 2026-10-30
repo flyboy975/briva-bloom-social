@@ -51,15 +51,15 @@ function MarketplacePage() {
     <Shell title={t("market")}>
       <div className="flex items-center justify-between border-b bg-card px-4 py-3">
         <h2 className="font-semibold">{t("market")}</h2>
-        <Button size="sm" onClick={() => setOpen(true)}><Plus size={16} />Sell something</Button>
+        <Button size="sm" onClick={() => setOpen(true)}><Plus size={16} />{t("sellSomething")}</Button>
       </div>
-      {error && <p role="alert" className="p-4 text-sm text-destructive">{error}</p>}
-      {loading && <p className="p-6 text-center text-sm text-muted-foreground">Loading…</p>}
+      {(error || (!open && formError)) && <p role="alert" className="p-4 text-sm text-destructive">{error || formError}</p>}
+      {loading && <p className="p-6 text-center text-sm text-muted-foreground">{t("loading")}</p>}
       {!loading && !listings.length && (
         <div className="space-y-3 px-6 py-16 text-center">
           <Tag className="mx-auto text-primary" size={36} />
-          <h3 className="font-semibold">Nothing for sale yet</h3>
-          <p className="text-sm text-muted-foreground">List the first item with a price and location.</p>
+          <h3 className="font-semibold">{t("nothingForSale")}</h3>
+          <p className="text-sm text-muted-foreground">{t("firstListing")}</p>
         </div>
       )}
       {listings.map((listing) => {
@@ -69,13 +69,13 @@ function MarketplacePage() {
           <article key={listing.id} className="border-b bg-card px-4 py-4">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <p className="font-semibold">{listing.title}{listing.status === "sold" && <span className="ml-2 rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-muted-foreground">Sold</span>}</p>
+                <p className="font-semibold">{listing.title}{listing.status === "sold" && <span className="ml-2 rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-muted-foreground">{t("sold")}</span>}</p>
                 <p className="text-sm font-bold text-primary">{formatPrice(listing.price_cents, listing.currency)}</p>
               </div>
               {mine && (
                 <div className="flex shrink-0 gap-2">
-                  {listing.status === "active" && <Button size="sm" variant="outline" onClick={async () => { const err = await setStatus(listing.id, "sold"); if (err) setFormError(err); }}>Mark sold</Button>}
-                  <Button size="sm" variant="ghost" onClick={async () => { const err = await removeListing(listing.id); if (err) setFormError(err); }}>Delete</Button>
+                  {listing.status === "active" && <Button size="sm" variant="outline" onClick={async () => { const err = await setStatus(listing.id, "sold"); if (err) setFormError(err); }}>{t("markSold")}</Button>}
+                  <Button size="sm" variant="ghost" onClick={async () => { const err = await removeListing(listing.id); if (err) setFormError(err); }}>{t("delete")}</Button>
                 </div>
               )}
             </div>
@@ -90,8 +90,8 @@ function MarketplacePage() {
       })}
       <Dialog open={open} onOpenChange={(value) => { if (!busy) { setOpen(value); if (!value) setFormError(""); } }}>
         <DialogContent className="max-h-[90dvh] overflow-y-auto rounded-lg">
-          <DialogTitle>Sell something</DialogTitle>
-          <DialogDescription>Add a clear title, price and location so buyers can find you.</DialogDescription>
+          <DialogTitle>{t("sellSomething")}</DialogTitle>
+          <DialogDescription>{t("listingPrompt")}</DialogDescription>
           <form className="space-y-4" onSubmit={async (e) => {
             e.preventDefault();
             if (busy) return;
@@ -101,27 +101,27 @@ function MarketplacePage() {
             if (err) { setFormError(err); return; }
             setOpen(false); setTitle(""); setDescription(""); setPrice(""); setLocation("");
           }}>
-            <label className="block text-sm font-medium">Title
+            <label className="block text-sm font-medium">{t("title")}
               <input aria-label="Listing title" value={title} maxLength={80} onChange={(e) => setTitle(e.target.value)} className="mt-2 w-full rounded-lg border bg-background p-3" />
             </label>
-            <label className="block text-sm font-medium">Description
+            <label className="block text-sm font-medium">{t("description")}
               <textarea aria-label="Listing description" value={description} maxLength={1000} onChange={(e) => setDescription(e.target.value)} className="mt-2 w-full rounded-lg border bg-background p-3" rows={2} />
             </label>
             <div className="flex gap-2">
-              <label className="block flex-1 text-sm font-medium">Price
+              <label className="block flex-1 text-sm font-medium">{t("price")}
                 <input aria-label="Listing price" type="number" min="0" step="0.01" value={price} onChange={(e) => setPrice(e.target.value)} className="mt-2 w-full rounded-lg border bg-background p-3" />
               </label>
-              <label className="block w-28 text-sm font-medium">Currency
+              <label className="block w-28 text-sm font-medium">{t("currency")}
                 <select aria-label="Currency" value={currency} onChange={(e) => setCurrency(e.target.value)} className="mt-2 w-full rounded-lg border bg-background p-3">
                   <option value="KES">KES</option><option value="USD">USD</option><option value="EUR">EUR</option><option value="GBP">GBP</option><option value="NGN">NGN</option><option value="ZAR">ZAR</option>
                 </select>
               </label>
             </div>
-            <label className="block text-sm font-medium">Location
+            <label className="block text-sm font-medium">{t("location")}
               <input aria-label="Listing location" value={location} maxLength={80} placeholder="e.g. Nairobi, Westlands" onChange={(e) => setLocation(e.target.value)} className="mt-2 w-full rounded-lg border bg-background p-3" />
             </label>
             {formError && <p role="alert" className="text-sm text-destructive">{formError}</p>}
-            <Button type="submit" className="w-full" disabled={busy}>{busy ? "Saving…" : "List item"}</Button>
+            <Button type="submit" className="w-full" disabled={busy}>{busy ? t("saving") : t("listItem")}</Button>
           </form>
         </DialogContent>
       </Dialog>
