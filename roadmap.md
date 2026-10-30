@@ -1,5 +1,6 @@
 # Briva roadmap
-- [ ] Finalize navigation and language picker; restore shared feed, avatars and notification controls
+- [x] Finalize navigation and language picker; restore shared feed, avatars and notification controls
+- [ ] Finish community-page translations and verify group approval/decline, Reels sound/swiping, signed-out privacy and test-data cleanup
 - [ ] Add and verify home Reels: 15–60-second videos, likes, comments, sharing and member-sound selection
 - [ ] Add groups with creator-selected joining rules, member posts and admin approvals
 - [ ] Add marketplace listings with price and location
