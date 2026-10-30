@@ -51,13 +51,13 @@ function GroupsPage() {
         <h2 className="font-semibold">{t("groups")}</h2>
         <Button size="sm" onClick={() => setOpen(true)}><Plus size={16} />{t("create")}</Button>
       </div>
-      {error && <p role="alert" className="p-4 text-sm text-destructive">{error}</p>}
-      {loading && <p className="p-6 text-center text-sm text-muted-foreground">Loading…</p>}
+      {(error || (!open && formError)) && <p role="alert" className="p-4 text-sm text-destructive">{error || formError}</p>}
+      {loading && <p className="p-6 text-center text-sm text-muted-foreground">{t("loading")}</p>}
       {!loading && !groups.length && (
         <div className="space-y-3 px-6 py-16 text-center">
           <Users className="mx-auto text-primary" size={36} />
-          <h3 className="font-semibold">No groups yet</h3>
-          <p className="text-sm text-muted-foreground">Create the first group and invite your friends.</p>
+          <h3 className="font-semibold">{t("noGroups")}</h3>
+          <p className="text-sm text-muted-foreground">{t("firstGroup")}</p>
         </div>
       )}
       {groups.map((group) => {
@@ -67,10 +67,10 @@ function GroupsPage() {
           <div key={group.id} className="flex items-center gap-3 border-b bg-card px-4 py-4">
             <Link to="/groups/$groupId" params={{ groupId: group.id }} className="min-w-0 flex-1">
               <p className="truncate font-semibold">{group.name}</p>
-              <p className="text-xs text-muted-foreground">{count} members · {group.join_policy === "open" ? "Open to join" : "Admin approval"}</p>
+              <p className="text-xs text-muted-foreground">{count} {t("members")} · {group.join_policy === "open" ? t("openToJoin") : t("adminApproval")}</p>
             </Link>
             {membership?.status === "approved" ? (
-              <Button asChild variant="outline" size="sm"><Link to="/groups/$groupId" params={{ groupId: group.id }}>Open</Link></Button>
+              <Button asChild variant="outline" size="sm"><Link to="/groups/$groupId" params={{ groupId: group.id }}>{t("openGroup")}</Link></Button>
             ) : membership?.status === "pending" ? (
               <span className="text-xs font-medium text-muted-foreground">{t("pending")}</span>
             ) : (
@@ -81,8 +81,8 @@ function GroupsPage() {
       })}
       <Dialog open={open} onOpenChange={(value) => { if (!busy) { setOpen(value); if (!value) setFormError(""); } }}>
         <DialogContent className="rounded-lg">
-          <DialogTitle>Create a group</DialogTitle>
-          <DialogDescription>Choose whether people join instantly or need your approval.</DialogDescription>
+          <DialogTitle>{t("createGroup")}</DialogTitle>
+          <DialogDescription>{t("groupJoinChoice")}</DialogDescription>
           <form className="space-y-4" onSubmit={async (e) => {
             e.preventDefault();
             if (busy) return;
@@ -94,20 +94,20 @@ function GroupsPage() {
             if (err) { setFormError(err); return; }
             setOpen(false); setName(""); setDescription(""); setPolicy("open");
           }}>
-            <label className="block text-sm font-medium">Name
+            <label className="block text-sm font-medium">{t("name")}
               <input aria-label="Group name" value={name} maxLength={60} onChange={(e) => setName(e.target.value)} className="mt-2 w-full rounded-lg border bg-background p-3" />
             </label>
-            <label className="block text-sm font-medium">Description
+            <label className="block text-sm font-medium">{t("description")}
               <textarea aria-label="Group description" value={description} maxLength={500} onChange={(e) => setDescription(e.target.value)} className="mt-2 w-full rounded-lg border bg-background p-3" rows={2} />
             </label>
-            <label className="block text-sm font-medium">Joining
+            <label className="block text-sm font-medium">{t("joining")}
               <select aria-label="Joining rule" value={policy} onChange={(e) => setPolicy(e.target.value === "approval" ? "approval" : "open")} className="mt-2 w-full rounded-lg border bg-background p-3">
-                <option value="open">Anyone can join instantly</option>
-                <option value="approval">Admins approve new members</option>
+                <option value="open">{t("joinInstantly")}</option>
+                <option value="approval">{t("adminsApprove")}</option>
               </select>
             </label>
             {formError && <p role="alert" className="text-sm text-destructive">{formError}</p>}
-            <Button type="submit" className="w-full" disabled={busy}>{busy ? "Creating…" : t("create")}</Button>
+            <Button type="submit" className="w-full" disabled={busy}>{busy ? t("creating") : t("create")}</Button>
           </form>
         </DialogContent>
       </Dialog>
