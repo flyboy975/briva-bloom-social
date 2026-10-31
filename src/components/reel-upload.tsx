@@ -26,7 +26,7 @@ export function ReelUpload({ reels, onDone }: { reels: Reel[]; onDone: () => Pro
     <Button size="sm" onClick={() => setOpen(true)}><Plus size={16} />Create Reel</Button>
     <Dialog open={open} onOpenChange={(value) => { if (!busy) { setOpen(value); if (!value) { setFile(undefined); setDuration(0); setError(""); } } }}>
       <DialogContent className="max-h-[90dvh] overflow-y-auto rounded-lg">
-        <DialogTitle>Create a Reel</DialogTitle><DialogDescription>1–600 seconds · MP4, WebM or MOV · up to 200 MB</DialogDescription>
+        <DialogTitle>Create a Reel</DialogTitle><DialogDescription>1–600 seconds · MP4, WebM or MOV · up to 50 MB</DialogDescription>
         <form className="space-y-4" onSubmit={async (e) => {
           e.preventDefault(); if (!me || !file || busy) return;
           const invalid = reelFileError(file) || reelDurationError(duration);
