@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Home, PlusSquare, UserRound, Clapperboard, Bell, Send, Users, Store, CalendarDays, Heart, MessageCircle, Languages } from "lucide-react";
+import { Home, PlusSquare, UserRound, Clapperboard, UserPlus, Send, Users, Store, CalendarDays, Heart, MessageCircle, Languages } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useStore, timeAgo, type User, type Post } from "@/lib/store";
 import { useMessaging } from "@/lib/messaging";
@@ -27,6 +27,7 @@ export function Shell({ children, title, wide }: { children: ReactNode; title?: 
   const { unread } = useMessaging();
   const { lang, setLang, t } = useLanguage();
   const requests = me ? pendingRequests(friendships, me.id) : [];
+  const friends = me ? friendships.filter((f) => f.status === "accepted" && (f.requester_id === me.id || f.receiver_id === me.id)).map((f) => users.find((u) => u.id === (f.requester_id === me.id ? f.receiver_id : f.requester_id))).filter((u): u is NonNullable<typeof u> => Boolean(u)) : [];
   return <div className="flex min-h-dvh flex-col bg-background">
     <header className="sticky top-0 z-20 border-b bg-card">
       <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-2 px-4 py-3">
@@ -36,9 +37,10 @@ export function Shell({ children, title, wide }: { children: ReactNode; title?: 
             <SelectTrigger aria-label={t("language")} className="w-[120px]"><Languages size={16} /><SelectValue /></SelectTrigger>
             <SelectContent>{LANGS.map((l) => <SelectItem key={l.id} value={l.id}>{l.label}</SelectItem>)}</SelectContent>
           </Select>
-          <Popover><PopoverTrigger asChild><Button variant="ghost" size="icon" aria-label={t("friendRequests")} title={t("friendRequests")} className="relative"><Bell size={22} />{requests.length > 0 && <span className="absolute right-0 top-0 rounded-full bg-destructive px-1 text-[10px] text-destructive-foreground">{requests.length}</span>}</Button></PopoverTrigger>
-            <PopoverContent align="end" className="w-80 max-w-[calc(100vw-2rem)]"><h2 className="mb-3 font-semibold">{t("friendRequests")}</h2>{!requests.length && <p className="text-sm text-muted-foreground">{t("noRequests")}</p>}{requests.map((r) => { const user = users.find((u) => u.id === r.requester_id); return <div key={r.id} className="space-y-2 border-t py-3"><div className="flex items-center gap-2"><Avatar user={user} size={32} />{user && <Link to="/u/$username" params={{ username: user.username }} className="truncate font-semibold">{user.name}</Link>}</div><FriendshipActions otherId={r.requester_id} /></div>; })}</PopoverContent>
-          </Popover>
+          {me && <Popover><PopoverTrigger asChild><Button variant="outline" size="sm" aria-label={t("friends")} className="relative gap-1"><UserPlus size={18} /><span className="hidden min-[400px]:inline">{t("friends")}</span>{requests.length > 0 && <span className="absolute -right-1 -top-1 rounded-full bg-destructive px-1 text-[10px] text-destructive-foreground">{requests.length}</span>}</Button></PopoverTrigger>
+            <PopoverContent align="end" className="max-h-[70dvh] w-80 max-w-[calc(100vw-2rem)] overflow-y-auto"><h2 className="mb-3 font-semibold">{t("friendRequests")} ({requests.length})</h2>{!requests.length && <p className="text-sm text-muted-foreground">{t("noRequests")}</p>}{requests.map((r) => { const user = users.find((u) => u.id === r.requester_id); return <div key={r.id} className="space-y-2 border-t py-3"><div className="flex items-center gap-2"><Avatar user={user} size={32} />{user && <Link to="/u/$username" params={{ username: user.username }} className="truncate font-semibold">{user.name}</Link>}</div><FriendshipActions otherId={r.requester_id} /></div>; })}
+              <h2 className="mb-3 mt-4 border-t pt-3 font-semibold">{t("friends")} ({friends.length})</h2>{!friends.length && <p className="text-sm text-muted-foreground">{t("noFriends")}</p>}{friends.map((user) => <Link key={user.id} to="/u/$username" params={{ username: user.username }} className="flex items-center gap-2 py-2"><Avatar user={user} size={32} /><span className="truncate font-semibold">{user.name}</span></Link>)}</PopoverContent>
+          </Popover>}
           <Button asChild variant="ghost" size="icon" className="relative"><Link to="/messages" aria-label={t("messages")} title={t("messages")}><Send size={22} />{unread > 0 && <span className="absolute right-0 top-0 rounded-full bg-primary px-1 text-[10px] text-primary-foreground">{unread}</span>}</Link></Button>
         </div>
       </div>
