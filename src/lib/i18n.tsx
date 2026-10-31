@@ -211,8 +211,8 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   return <LangCtx.Provider value={{ lang, setLang, t }}>{children}</LangCtx.Provider>;
 }
 
+// Fallback keeps pages rendering in English if the provider is briefly missing (e.g. after a hot reload).
+const fallback: Ctx = { lang: "en", setLang: () => undefined, t: (key) => dict.en[key] };
 export function useLanguage() {
-  const ctx = useContext(LangCtx);
-  if (!ctx) throw new Error("useLanguage outside provider");
-  return ctx;
+  return useContext(LangCtx) ?? fallback;
 }
