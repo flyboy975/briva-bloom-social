@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Home, PlusSquare, UserRound, Clapperboard, Bell, Send, Users, Store, CalendarDays, Heart, MessageCircle, Languages } from "lucide-react";
+import { Home, PlusSquare, UserRound, Clapperboard, UserPlus, Send, Users, Store, CalendarDays, Heart, MessageCircle, Languages } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useStore, timeAgo, type User, type Post } from "@/lib/store";
 import { useMessaging } from "@/lib/messaging";
@@ -27,6 +27,7 @@ export function Shell({ children, title, wide }: { children: ReactNode; title?: 
   const { unread } = useMessaging();
   const { lang, setLang, t } = useLanguage();
   const requests = me ? pendingRequests(friendships, me.id) : [];
+  const friends = me ? friendships.filter((f) => f.status === "accepted" && (f.requester_id === me.id || f.receiver_id === me.id)).map((f) => users.find((u) => u.id === (f.requester_id === me.id ? f.receiver_id : f.requester_id))).filter((u): u is NonNullable<typeof u> => Boolean(u)) : [];
   return <div className="flex min-h-dvh flex-col bg-background">
     <header className="sticky top-0 z-20 border-b bg-card">
       <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-2 px-4 py-3">
