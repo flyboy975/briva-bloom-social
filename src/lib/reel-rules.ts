@@ -5,5 +5,5 @@ export function reelDurationError(duration: number) {
 }
 export function reelFileError(file: Pick<File, "type" | "size">) {
   if (!["video/mp4", "video/webm", "video/quicktime"].includes(file.type)) return "Choose an MP4, WebM or MOV video";
-  return file.size > 50 * 1024 * 1024 ? "Video must be 200 MB or smaller" : null;
+  return file.size > 50 * 1024 * 1024 ? "Video must be 50 MB or smaller" : null;
 }
