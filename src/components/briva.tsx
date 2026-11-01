@@ -28,33 +28,40 @@ export function Shell({ children, title, wide }: { children: ReactNode; title?: 
   const { lang, setLang, t } = useLanguage();
   const requests = me ? pendingRequests(friendships, me.id) : [];
   const friends = me ? friendships.filter((f) => f.status === "accepted" && (f.requester_id === me.id || f.receiver_id === me.id)).map((f) => users.find((u) => u.id === (f.requester_id === me.id ? f.receiver_id : f.requester_id))).filter((u): u is NonNullable<typeof u> => Boolean(u)) : [];
-  return <div className="flex min-h-dvh flex-col bg-background">
-    <header className="sticky top-0 z-20 border-b bg-card">
-      <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-2 px-4 py-3">
-        <Link to="/" className="text-3xl font-extrabold text-primary">briva</Link>
-        <div className="flex items-center gap-1">
+  const [query, setQuery] = useState("");
+  const q = query.trim().toLowerCase();
+  const found = me && q ? users.filter((u) => u.id !== me.id && (u.name.toLowerCase().includes(q) || u.username.toLowerCase().includes(q))).slice(0, 8) : [];
+  const iconLink = "relative flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground";
+  return <div className="flex min-h-dvh w-full max-w-full flex-col overflow-x-hidden bg-background">
+    <header className="sticky top-0 z-20 border-b bg-card pt-[env(safe-area-inset-top)]">
+      <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-1 px-3 py-2">
+        <Link to="/" className="shrink-0 text-2xl font-extrabold text-primary">briva</Link>
+        <div className="flex min-w-0 items-center gap-0.5">
+          <Link to="/groups" aria-label={t("groups")} title={t("groups")} className={iconLink} activeProps={{ className: `${iconLink} text-primary` }}><Users size={20} /></Link>
+          <Link to="/marketplace" aria-label={t("market")} title={t("market")} className={iconLink} activeProps={{ className: `${iconLink} text-primary` }}><Store size={20} /></Link>
+          <Link to="/events" aria-label={t("events")} title={t("events")} className={iconLink} activeProps={{ className: `${iconLink} text-primary` }}><CalendarDays size={20} /></Link>
           <Select value={lang} onValueChange={(value) => { if (value === "en" || value === "sw" || value === "sheng") setLang(value); }}>
-            <SelectTrigger aria-label={t("language")} className="w-[120px]"><Languages size={16} /><SelectValue /></SelectTrigger>
+            <SelectTrigger aria-label={t("language")} className="h-9 w-auto shrink-0 gap-1 px-2"><Languages size={16} /></SelectTrigger>
             <SelectContent>{LANGS.map((l) => <SelectItem key={l.id} value={l.id}>{l.label}</SelectItem>)}</SelectContent>
           </Select>
-          {me && <Popover><PopoverTrigger asChild><Button variant="outline" size="sm" aria-label={t("friends")} className="relative gap-1"><UserPlus size={18} /><span className="hidden min-[400px]:inline">{t("friends")}</span>{requests.length > 0 && <span className="absolute -right-1 -top-1 rounded-full bg-destructive px-1 text-[10px] text-destructive-foreground">{requests.length}</span>}</Button></PopoverTrigger>
-            <PopoverContent align="end" className="max-h-[70dvh] w-80 max-w-[calc(100vw-2rem)] overflow-y-auto"><h2 className="mb-3 font-semibold">{t("friendRequests")} ({requests.length})</h2>{!requests.length && <p className="text-sm text-muted-foreground">{t("noRequests")}</p>}{requests.map((r) => { const user = users.find((u) => u.id === r.requester_id); return <div key={r.id} className="space-y-2 border-t py-3"><div className="flex items-center gap-2"><Avatar user={user} size={32} />{user && <Link to="/u/$username" params={{ username: user.username }} className="truncate font-semibold">{user.name}</Link>}</div><FriendshipActions otherId={r.requester_id} /></div>; })}
+          {me && <Popover><PopoverTrigger asChild><Button variant="ghost" size="icon" aria-label={t("friends")} title={t("friends")} className="relative h-9 w-9 shrink-0"><UserPlus size={20} />{requests.length > 0 && <span className="absolute -right-0.5 -top-0.5 rounded-full bg-destructive px-1 text-[10px] text-destructive-foreground">{requests.length}</span>}</Button></PopoverTrigger>
+            <PopoverContent align="end" className="max-h-[75dvh] w-80 max-w-[calc(100vw-1.5rem)] overflow-y-auto">
+              <h2 className="mb-2 font-semibold">Find people</h2>
+              <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search by name" className={inputCls} />
+              {q && !found.length && <p className="pt-2 text-sm text-muted-foreground">No members found</p>}
+              {found.map((user) => <div key={user.id} className="space-y-2 border-b py-3"><Link to="/u/$username" params={{ username: user.username }} className="flex min-w-0 items-center gap-2"><Avatar user={user} size={32} /><span className="truncate font-semibold">{user.name}</span></Link><FriendshipActions otherId={user.id} /></div>)}
+              <h2 className="mb-3 mt-4 border-t pt-3 font-semibold">{t("friendRequests")} ({requests.length})</h2>{!requests.length && <p className="text-sm text-muted-foreground">{t("noRequests")}</p>}{requests.map((r) => { const user = users.find((u) => u.id === r.requester_id); return <div key={r.id} className="space-y-2 border-t py-3"><div className="flex items-center gap-2"><Avatar user={user} size={32} />{user && <Link to="/u/$username" params={{ username: user.username }} className="truncate font-semibold">{user.name}</Link>}</div><FriendshipActions otherId={r.requester_id} /></div>; })}
               <h2 className="mb-3 mt-4 border-t pt-3 font-semibold">{t("friends")} ({friends.length})</h2>{!friends.length && <p className="text-sm text-muted-foreground">{t("noFriends")}</p>}{friends.map((user) => <Link key={user.id} to="/u/$username" params={{ username: user.username }} className="flex items-center gap-2 py-2"><Avatar user={user} size={32} /><span className="truncate font-semibold">{user.name}</span></Link>)}</PopoverContent>
           </Popover>}
-          <Button asChild variant="ghost" size="icon" className="relative"><Link to="/messages" aria-label={t("messages")} title={t("messages")}><Send size={22} />{unread > 0 && <span className="absolute right-0 top-0 rounded-full bg-primary px-1 text-[10px] text-primary-foreground">{unread}</span>}</Link></Button>
         </div>
       </div>
-      <div className="mx-auto flex max-w-[600px] border-t text-sm">
-        <Link to="/groups" className="flex flex-1 items-center justify-center gap-2 py-2 text-muted-foreground" activeProps={{ className: "text-primary font-semibold" }}><Users size={17} />{t("groups")}</Link>
-        <Link to="/marketplace" className="flex flex-1 items-center justify-center gap-2 py-2 text-muted-foreground" activeProps={{ className: "text-primary font-semibold" }}><Store size={17} />{t("market")}</Link>
-        <Link to="/events" className="flex flex-1 items-center justify-center gap-2 py-2 text-muted-foreground" activeProps={{ className: "text-primary font-semibold" }}><CalendarDays size={17} />{t("events")}</Link>
-      </div>
     </header>
-    <main aria-label={title} className={wide ? "w-full flex-1" : "mx-auto w-full max-w-[600px] flex-1"}>{children}</main>
-    <nav aria-label="Main navigation" className="sticky bottom-0 z-20 flex border-t bg-card px-2 pt-2 pb-[max(8px,env(safe-area-inset-bottom))]">
+    <main aria-label={title} className={wide ? "w-full min-w-0 flex-1" : "mx-auto w-full min-w-0 max-w-[600px] flex-1"}>{children}</main>
+    <nav aria-label="Main navigation" className="sticky bottom-0 z-20 flex border-t bg-card px-1 pt-2 pb-[max(8px,env(safe-area-inset-bottom))]">
       <Link to="/" className={nav} activeProps={active} activeOptions={{ exact: true }}><Home size={22} />{t("home")}</Link>
       <Link to="/reels" className={nav} activeProps={active}><Clapperboard size={22} />{t("reels")}</Link>
       <Link to="/create" className={nav} activeProps={active}><PlusSquare size={22} />{t("post")}</Link>
+      <Link to="/messages" className={`${nav} relative`} activeProps={{ className: `${nav} relative text-primary font-semibold` }}><Send size={22} />{t("messages")}{unread > 0 && <span className="absolute right-[calc(50%-18px)] top-0 rounded-full bg-primary px-1 text-[10px] text-primary-foreground">{unread}</span>}</Link>
       {me ? <Link to="/u/$username" params={{ username: me.username }} className={nav} activeProps={active}><UserRound size={22} />{t("profile")}</Link> : <Link to="/login" className={nav} activeProps={active}><UserRound size={22} />{t("login")}</Link>}
     </nav>
   </div>;
