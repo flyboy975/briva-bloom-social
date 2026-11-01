@@ -28,7 +28,6 @@ function Feed() {
   const navigate = Route.useNavigate();
   return (
     <Shell>
-      <Tabs value={view === "reels" ? "reels" : "posts"} onValueChange={(value) => void navigate({ search: value === "reels" ? { view: "reels" } : {} })} className="border-b bg-card px-4 py-2"><TabsList className="grid w-full grid-cols-2"><TabsTrigger value="posts">{t("posts")}</TabsTrigger><TabsTrigger value="reels">{t("reels")}</TabsTrigger></TabsList></Tabs>
       {view === "reels" ? <ReelsFeed target={reel} /> : <>
       <StoriesBar />
       <Link to={me ? "/create" : "/login"} className="flex items-center gap-3 border-b bg-card px-4 py-3">
