@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PostCard, Shell, Avatar } from "@/components/briva";
 import { useStore } from "@/lib/store";
 import { StoriesBar } from "@/components/stories";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ReelsFeed } from "@/components/reels-feed";
 import { useLanguage } from "@/lib/i18n";
 
@@ -25,7 +24,6 @@ function Feed() {
   const { posts, me, ready } = useStore();
   const { t } = useLanguage();
   const { view, reel } = Route.useSearch();
-  const navigate = Route.useNavigate();
   return (
     <Shell>
       {view === "reels" ? <ReelsFeed target={reel} /> : <>
