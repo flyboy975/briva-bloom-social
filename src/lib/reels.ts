@@ -6,7 +6,7 @@ import type { Database } from "@/integrations/supabase/types";
 
 type Row = Database["public"]["Tables"]["reels"]["Row"];
 type Comment = Database["public"]["Tables"]["reel_comments"]["Row"];
-export type Reel = Row & { url: string; likes: string[]; comments: Comment[] };
+export type Reel = Row & { url: string; audioUrl: string; likes: string[]; comments: Comment[] };
 export function useReels() {
   const { me, users, friendships } = useStore();
   const [rows, setRows] = useState<Reel[]>([]);
@@ -22,8 +22,8 @@ export function useReels() {
     ]);
     const failure = reels.error || likes.error || comments.error;
     if (failure) { setError("Reels could not load. Try again."); setLoading(false); return; }
-    const signed = await signMany("reel-videos", (reels.data ?? []).map((r) => r.video_path));
-    setRows((reels.data ?? []).map((r) => ({ ...r, url: signed.get(r.video_path) ?? "", likes: (likes.data ?? []).filter((l) => l.reel_id === r.id).map((l) => l.user_id), comments: (comments.data ?? []).filter((c) => c.reel_id === r.id) })).filter((r) => r.url));
+    const [signed, audioSigned] = await Promise.all([signMany("reel-videos", (reels.data ?? []).map((r) => r.video_path)), signMany("reel-audio", (reels.data ?? []).flatMap((r) => r.audio_path ? [r.audio_path] : []))]);
+    setRows((reels.data ?? []).map((r) => ({ ...r, url: signed.get(r.video_path) ?? "", audioUrl: audioSigned.get(r.audio_path ?? "") ?? "", likes: (likes.data ?? []).filter((l) => l.reel_id === r.id).map((l) => l.user_id), comments: (comments.data ?? []).filter((c) => c.reel_id === r.id) })).filter((r) => r.url));
     setLoading(false); setError("");
   }, [userId]);
   useEffect(() => {
