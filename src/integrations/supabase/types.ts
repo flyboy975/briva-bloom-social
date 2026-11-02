@@ -505,6 +505,8 @@ export type Database = {
       }
       reels: {
         Row: {
+          audio_name: string | null
+          audio_path: string | null
           author_id: string
           caption: string
           created_at: string
@@ -514,6 +516,8 @@ export type Database = {
           video_path: string
         }
         Insert: {
+          audio_name?: string | null
+          audio_path?: string | null
           author_id: string
           caption?: string
           created_at?: string
@@ -523,6 +527,8 @@ export type Database = {
           video_path: string
         }
         Update: {
+          audio_name?: string | null
+          audio_path?: string | null
           author_id?: string
           caption?: string
           created_at?: string
@@ -598,6 +604,10 @@ export type Database = {
       }
       is_participant: {
         Args: { _conv: string; _user: string }
+        Returns: boolean
+      }
+      valid_reel_sound: {
+        Args: { _source: string; _target: string }
         Returns: boolean
       }
     }

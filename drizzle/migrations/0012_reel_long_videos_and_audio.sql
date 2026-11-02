@@ -1,0 +1,16 @@
+ALTER TABLE public.reels DROP CONSTRAINT reels_duration_seconds_check;
+ALTER TABLE public.reels ADD CONSTRAINT reels_duration_seconds_check CHECK (duration_seconds >= 15 AND duration_seconds <= 600);
+ALTER TABLE public.reels ADD COLUMN audio_path text;
+ALTER TABLE public.reels ADD COLUMN audio_name text;
+ALTER TABLE public.reels ADD CONSTRAINT reel_audio_owner_path CHECK (audio_path IS NULL OR audio_path LIKE author_id::text || '/%');
+ALTER TABLE public.reels ADD CONSTRAINT reel_one_sound CHECK (audio_path IS NULL OR sound_reel_id IS NULL);
+CREATE OR REPLACE FUNCTION public.can_reuse_reel_sound(_source uuid) RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$ WITH RECURSIVE chain AS (SELECT id, author_id, sound_reel_id, ARRAY[id] AS visited, false AS cycle FROM public.reels WHERE id = _source UNION ALL SELECT r.id, r.author_id, r.sound_reel_id, c.visited || r.id, r.id = ANY(c.visited) FROM public.reels r JOIN chain c ON r.id = c.sound_reel_id WHERE NOT c.cycle) SELECT count(*) > 0 AND bool_and(NOT cycle AND public.can_view_member_content(author_id)) FROM chain $$;
+CREATE FUNCTION public.valid_reel_sound(_source uuid, _target uuid) RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$ WITH RECURSIVE chain AS (SELECT id, sound_reel_id, ARRAY[id] AS visited FROM public.reels WHERE id = _source UNION ALL SELECT r.id, r.sound_reel_id, c.visited || r.id FROM public.reels r JOIN chain c ON r.id = c.sound_reel_id WHERE NOT r.id = ANY(c.visited)) SELECT public.can_reuse_reel_sound(_source) AND NOT EXISTS (SELECT 1 FROM chain WHERE id = _target) $$;
+REVOKE ALL ON FUNCTION public.valid_reel_sound(uuid, uuid) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.valid_reel_sound(uuid, uuid) TO authenticated, service_role;
+ALTER POLICY "create own reel" ON public.reels WITH CHECK (author_id = auth.uid() AND video_path LIKE auth.uid()::text || '/%' AND (sound_reel_id IS NULL OR public.valid_reel_sound(sound_reel_id, id)));
+GRANT UPDATE (sound_reel_id, audio_path, audio_name) ON public.reels TO authenticated;
+CREATE POLICY "change own reel sound" ON public.reels FOR UPDATE TO authenticated USING (author_id = auth.uid()) WITH CHECK (author_id = auth.uid() AND (sound_reel_id IS NULL OR public.valid_reel_sound(sound_reel_id, id)));
+CREATE POLICY "upload own reel audio" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'reel-audio' AND (storage.foldername(name))[1] = auth.uid()::text AND lower(storage.extension(name)) IN ('mp3','m4a','aac','wav','ogg','opus','flac','webm','mp4'));
+CREATE POLICY "read accessible reel audio" ON storage.objects FOR SELECT TO authenticated USING (bucket_id = 'reel-audio' AND ((storage.foldername(name))[1] = auth.uid()::text OR EXISTS (SELECT 1 FROM public.reels WHERE audio_path = name AND public.can_view_member_content(author_id))));
+CREATE POLICY "remove own reel audio" ON storage.objects FOR DELETE TO authenticated USING (bucket_id = 'reel-audio' AND (storage.foldername(name))[1] = auth.uid()::text);
