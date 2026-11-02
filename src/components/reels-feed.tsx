@@ -34,7 +34,6 @@ function ReelPlayer({ reel, reels, onReload, onLike, onComment, onShare }: { ree
     if (active && !document.hidden) {
       void player.play().catch(() => setPaused(true));
       if (soundtrack) { soundtrack.currentTime = player.currentTime % (soundtrack.duration || 600); void soundtrack.play().catch(() => setPaused(true)); }
-      else soundtrack?.pause();
     } else { player.pause(); soundtrack?.pause(); }
     const onHidden = () => { if (document.hidden) { player.pause(); soundtrack?.pause(); } else if (active) { void player.play().catch(() => setPaused(true)); if (soundtrack) void soundtrack.play().catch(() => setPaused(true)); } };
     document.addEventListener("visibilitychange", onHidden);
