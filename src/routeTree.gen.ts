@@ -18,6 +18,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as MarketplaceRouteImport } from './routes/marketplace'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as ReelsRouteImport } from './routes/reels'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as GroupsGroupIdRouteImport } from './routes/groups_.$groupId'
 import { Route as UUsernameRouteImport } from './routes/u.$username'
@@ -67,6 +68,11 @@ const ReelsRoute = ReelsRouteImport.update({
   path: '/reels',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
@@ -93,6 +99,7 @@ export interface FileRoutesByFullPath {
   '/marketplace': typeof MarketplaceRoute
   '/messages': typeof MessagesRoute
   '/reels': typeof ReelsRoute
+  '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/groups/$groupId': typeof GroupsGroupIdRoute
   '/u/$username': typeof UUsernameRoute
@@ -107,6 +114,7 @@ export interface FileRoutesByTo {
   '/marketplace': typeof MarketplaceRoute
   '/messages': typeof MessagesRoute
   '/reels': typeof ReelsRoute
+  '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/groups/$groupId': typeof GroupsGroupIdRoute
   '/u/$username': typeof UUsernameRoute
@@ -122,6 +130,7 @@ export interface FileRoutesById {
   '/marketplace': typeof MarketplaceRoute
   '/messages': typeof MessagesRoute
   '/reels': typeof ReelsRoute
+  '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/groups_/$groupId': typeof GroupsGroupIdRoute
   '/u/$username': typeof UUsernameRoute
@@ -138,6 +147,7 @@ export interface FileRouteTypes {
     | '/marketplace'
     | '/messages'
     | '/reels'
+    | '/settings'
     | '/signup'
     | '/groups/$groupId'
     | '/u/$username'
@@ -152,6 +162,7 @@ export interface FileRouteTypes {
     | '/marketplace'
     | '/messages'
     | '/reels'
+    | '/settings'
     | '/signup'
     | '/groups/$groupId'
     | '/u/$username'
@@ -166,6 +177,7 @@ export interface FileRouteTypes {
     | '/marketplace'
     | '/messages'
     | '/reels'
+    | '/settings'
     | '/signup'
     | '/groups_/$groupId'
     | '/u/$username'
@@ -181,6 +193,7 @@ export interface RootRouteChildren {
   MarketplaceRoute: typeof MarketplaceRoute
   MessagesRoute: typeof MessagesRoute
   ReelsRoute: typeof ReelsRoute
+  SettingsRoute: typeof SettingsRoute
   SignupRoute: typeof SignupRoute
   GroupsGroupIdRoute: typeof GroupsGroupIdRoute
   UUsernameRoute: typeof UUsernameRoute
@@ -251,6 +264,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReelsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/signup': {
       id: '/signup'
       path: '/signup'
@@ -285,6 +305,7 @@ const rootRouteChildren: RootRouteChildren = {
   MarketplaceRoute: MarketplaceRoute,
   MessagesRoute: MessagesRoute,
   ReelsRoute: ReelsRoute,
+  SettingsRoute: SettingsRoute,
   SignupRoute: SignupRoute,
   GroupsGroupIdRoute: GroupsGroupIdRoute,
   UUsernameRoute: UUsernameRoute,
