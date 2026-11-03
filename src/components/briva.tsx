@@ -46,6 +46,7 @@ export function Shell({ children, title, wide }: { children: ReactNode; title?: 
             <SelectTrigger aria-label={t("language")} className="h-9 w-auto shrink-0 gap-1 px-2"><Languages size={16} /></SelectTrigger>
             <SelectContent>{LANGS.map((l) => <SelectItem key={l.id} value={l.id}>{l.label}</SelectItem>)}</SelectContent>
           </Select>
+          {me && <Link to="/settings" aria-label={t("settings")} title={t("settings")} className={iconLink} activeProps={{ className: `${iconLink} text-primary` }}><Settings size={20} /></Link>}
           {me && <Popover><PopoverTrigger asChild><Button variant="ghost" size="icon" aria-label={t("friends")} title={t("friends")} className="relative h-9 w-9 shrink-0"><UserPlus size={20} />{requests.length > 0 && <span className="absolute -right-0.5 -top-0.5 rounded-full bg-destructive px-1 text-[10px] text-destructive-foreground">{requests.length}</span>}</Button></PopoverTrigger>
             <PopoverContent align="end" className="max-h-[75dvh] w-80 max-w-[calc(100vw-1.5rem)] overflow-y-auto">
               <h2 className="mb-2 font-semibold">Find people</h2>
