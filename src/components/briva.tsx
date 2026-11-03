@@ -4,7 +4,7 @@ import { useState, type ReactNode } from "react";
 import { useStore, timeAgo, type User, type Post } from "@/lib/store";
 import { useMessaging } from "@/lib/messaging";
 import { useLanguage, LANGS } from "@/lib/i18n";
-import { pendingRequests } from "@/lib/social-rules";
+import { pendingRequests, suggestedPeople } from "@/lib/social-rules";
 import { FriendshipActions } from "@/components/friendship-actions";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -31,6 +31,7 @@ export function Shell({ children, title, wide }: { children: ReactNode; title?: 
   const [query, setQuery] = useState("");
   const q = query.trim().toLowerCase();
   const found = me && q ? users.filter((u) => u.id !== me.id && (u.name.toLowerCase().includes(q) || u.username.toLowerCase().includes(q))).slice(0, 8) : [];
+  const suggestions = suggestedPeople(users, me?.id ?? null, friendships).slice(0, 8);
   const iconLink = "relative flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground";
   return <div className="flex min-h-dvh w-full max-w-full flex-col overflow-x-hidden bg-background">
     <header className="sticky top-0 z-20 border-b bg-card pt-[env(safe-area-inset-top)]">
@@ -51,6 +52,7 @@ export function Shell({ children, title, wide }: { children: ReactNode; title?: 
               <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search by name" className={inputCls} />
               {q && !found.length && <p className="pt-2 text-sm text-muted-foreground">No members found</p>}
               {found.map((user) => <div key={user.id} className="space-y-2 border-b py-3"><Link to="/u/$username" params={{ username: user.username }} className="flex min-w-0 items-center gap-2"><Avatar user={user} size={32} /><span className="truncate font-semibold">{user.name}</span></Link><FriendshipActions otherId={user.id} /></div>)}
+              {!q && <section aria-label={t("peopleYouMayKnow")} className="mt-4 border-t pt-3"><div className="flex items-center justify-between gap-2"><h2 className="font-semibold">{t("peopleYouMayKnow")}</h2><Link to="/explore" className="shrink-0 text-xs font-semibold text-primary">{t("seeAll")}</Link></div>{!suggestions.length && <p className="pt-2 text-sm text-muted-foreground">{t("noPeople")}</p>}{suggestions.map((user) => <div key={user.id} className="space-y-2 border-b py-3"><Link to="/u/$username" params={{ username: user.username }} className="flex min-w-0 items-center gap-2"><Avatar user={user} size={32} /><span className="truncate font-semibold">{user.name}</span></Link><FriendshipActions otherId={user.id} /></div>)}</section>}
               <h2 className="mb-3 mt-4 border-t pt-3 font-semibold">{t("friendRequests")} ({requests.length})</h2>{!requests.length && <p className="text-sm text-muted-foreground">{t("noRequests")}</p>}{requests.map((r) => { const user = users.find((u) => u.id === r.requester_id); return <div key={r.id} className="space-y-2 border-t py-3"><div className="flex items-center gap-2"><Avatar user={user} size={32} />{user && <Link to="/u/$username" params={{ username: user.username }} className="truncate font-semibold">{user.name}</Link>}</div><FriendshipActions otherId={r.requester_id} /></div>; })}
               <h2 className="mb-3 mt-4 border-t pt-3 font-semibold">{t("friends")} ({friends.length})</h2>{!friends.length && <p className="text-sm text-muted-foreground">{t("noFriends")}</p>}{friends.map((user) => <Link key={user.id} to="/u/$username" params={{ username: user.username }} className="flex items-center gap-2 py-2"><Avatar user={user} size={32} /><span className="truncate font-semibold">{user.name}</span></Link>)}</PopoverContent>
           </Popover>}
