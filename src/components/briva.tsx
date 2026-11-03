@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Compass, Home, PlusSquare, UserRound, Clapperboard, UserPlus, Send, Users, Store, CalendarDays, Heart, MessageCircle, Languages } from "lucide-react";
+import { Compass, Home, PlusSquare, UserRound, Clapperboard, UserPlus, Send, Users, Store, CalendarDays, Heart, MessageCircle, Languages, Settings } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useStore, timeAgo, type User, type Post } from "@/lib/store";
 import { useMessaging } from "@/lib/messaging";
