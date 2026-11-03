@@ -68,6 +68,7 @@ const dict = {
     posts: "Posts", reels: "Reels", join: "Join", pending: "Pending", create: "Create", cancel: "Cancel",
     membersOnlyPage: "This page is for members only. Log in or sign up to continue.",
     noRequests: "No pending requests", like: "Like", comment: "Comment", writeComment: "Write a comment…", send: "Send",
+    settings: "Settings", account: "Account", changePhoto: "Change photo", uploading: "Uploading…", privateProfile: "Private profile", privateProfileHint: "Only accepted friends can see your posts and stories.", logOut: "Log out",
   },
   sw: {
     explore: "Gundua", peopleYouMayKnow: "Watu unaoweza kuwajua", people: "Watu", searchExplore: "Tafuta watu au machapisho", noPeople: "Hakuna watu wapya wa kupendekeza bado", noResults: "Hakuna matokeo", seeAll: "Ona wote",
@@ -129,6 +130,7 @@ const dict = {
     posts: "Machapisho", reels: "Reels", join: "Jiunge", pending: "Inasubiri", create: "Tengeneza", cancel: "Ghairi",
     membersOnlyPage: "Ukurasa huu ni kwa wanachama pekee. Ingia au jisajili kuendelea.",
     noRequests: "Hakuna maombi yanayosubiri", like: "Penda", comment: "Maoni", writeComment: "Andika maoni…", send: "Tuma",
+    settings: "Mipangilio", account: "Akaunti", changePhoto: "Badilisha picha", uploading: "Inapakia…", privateProfile: "Wasifu wa faragha", privateProfileHint: "Ni marafiki ulio kubali tu wanaoweza kuona machapisho na hadithi zako.", logOut: "Toka",
   },
   sheng: {
     explore: "Explore", peopleYouMayKnow: "Watu unaweza jua", people: "Watu", searchExplore: "Search watu ama posts", noPeople: "Hakuna watu wapya bado", noResults: "Hakuna results", seeAll: "Ona wote",
@@ -190,6 +192,7 @@ const dict = {
     posts: "Post", reels: "Reels", join: "Join", pending: "Inangoja", create: "Tengeneza", cancel: "Achana",
     membersOnlyPage: "Hii page ni ya members tu. Ingia ama sign up uendelee.",
     noRequests: "Hakuna request zinangoja", like: "Like", comment: "Comment", writeComment: "Weka comment…", send: "Tuma",
+    settings: "Settings", account: "Account", changePhoto: "Change photo", uploading: "Inaupload…", privateProfile: "Profaili private", privateProfileHint: "Ni mabeste uliokubali tu wanaona post na story zako.", logOut: "Logout",
   },
 } as const;
 
