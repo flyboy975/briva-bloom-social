@@ -1,6 +1,18 @@
 import { describe, expect, it } from "vitest";
-import { canViewContent, friendshipState, pendingRequests, conversationPair, liveStories, profileViewState, STORY_LIFETIME_MS, unreadMessages, type Friendship } from "@/lib/social-rules";
+import { suggestedPeople, canViewContent, friendshipState, pendingRequests, conversationPair, liveStories, profileViewState, STORY_LIFETIME_MS, unreadMessages, type Friendship } from "@/lib/social-rules";
 describe("Briva social rules", () => {
+  const people = ["me", "friend", "incoming", "outgoing", "new"].map((id) => ({ id, name: id, username: id }));
+  const connections: Friendship[] = [
+    { id: "1", requester_id: "me", receiver_id: "friend", status: "accepted" },
+    { id: "2", requester_id: "incoming", receiver_id: "me", status: "pending" },
+    { id: "3", requester_id: "me", receiver_id: "outgoing", status: "pending" },
+  ];
+  it("suggests only other members without existing friendships or requests", () => {
+    expect(suggestedPeople(people, "me", connections).map((person) => person.id)).toEqual(["new"]);
+  });
+  it("never suggests cached members to signed-out visitors", () => {
+    expect(suggestedPeople(people, null, connections)).toEqual([]);
+  });
   const pending: Friendship[] = [{ id: "request", requester_id: "a", receiver_id: "b", status: "pending" }];
   const accepted: Friendship[] = [{ id: "request", requester_id: "a", receiver_id: "b", status: "accepted" }];
   it("private posts and stories require accepted friendship, not a pending request", () => {

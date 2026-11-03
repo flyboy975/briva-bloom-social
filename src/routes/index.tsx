@@ -4,6 +4,7 @@ import { useStore } from "@/lib/store";
 import { StoriesBar } from "@/components/stories";
 import { ReelsFeed } from "@/components/reels-feed";
 import { useLanguage } from "@/lib/i18n";
+import { PeopleSuggestions } from "@/components/people-suggestions";
 
 export const Route = createFileRoute("/")({
   validateSearch: (search: Record<string, unknown>): { view?: "reels" | undefined; reel?: string | undefined } => ({ view: search['view'] === "reels" ? "reels" : undefined, reel: typeof search['reel'] === "string" ? search['reel'] : undefined }),
@@ -34,6 +35,7 @@ function Feed() {
           {me ? `${t("feedPrompt")}, ${me.name.split(" ")[0]}?` : t("feedJoin")}
         </span>
       </Link>
+      <PeopleSuggestions />
       {!ready && <p className="p-6 text-center text-sm text-muted-foreground">{t("loadingPosts")}</p>}
       {ready && !me && (
         <div className="p-6 text-center">

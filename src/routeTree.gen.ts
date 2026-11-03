@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CreateRouteImport } from './routes/create'
 import { Route as EventsRouteImport } from './routes/events'
+import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as GroupsRouteImport } from './routes/groups'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MarketplaceRouteImport } from './routes/marketplace'
@@ -34,6 +35,11 @@ const CreateRoute = CreateRouteImport.update({
 const EventsRoute = EventsRouteImport.update({
   id: '/events',
   path: '/events',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExploreRoute = ExploreRouteImport.update({
+  id: '/explore',
+  path: '/explore',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GroupsRoute = GroupsRouteImport.update({
@@ -81,6 +87,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/create': typeof CreateRoute
   '/events': typeof EventsRoute
+  '/explore': typeof ExploreRoute
   '/groups': typeof GroupsRoute
   '/login': typeof LoginRoute
   '/marketplace': typeof MarketplaceRoute
@@ -94,6 +101,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/create': typeof CreateRoute
   '/events': typeof EventsRoute
+  '/explore': typeof ExploreRoute
   '/groups': typeof GroupsRoute
   '/login': typeof LoginRoute
   '/marketplace': typeof MarketplaceRoute
@@ -108,6 +116,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/create': typeof CreateRoute
   '/events': typeof EventsRoute
+  '/explore': typeof ExploreRoute
   '/groups': typeof GroupsRoute
   '/login': typeof LoginRoute
   '/marketplace': typeof MarketplaceRoute
@@ -123,6 +132,7 @@ export interface FileRouteTypes {
     | '/'
     | '/create'
     | '/events'
+    | '/explore'
     | '/groups'
     | '/login'
     | '/marketplace'
@@ -136,6 +146,7 @@ export interface FileRouteTypes {
     | '/'
     | '/create'
     | '/events'
+    | '/explore'
     | '/groups'
     | '/login'
     | '/marketplace'
@@ -149,6 +160,7 @@ export interface FileRouteTypes {
     | '/'
     | '/create'
     | '/events'
+    | '/explore'
     | '/groups'
     | '/login'
     | '/marketplace'
@@ -163,6 +175,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CreateRoute: typeof CreateRoute
   EventsRoute: typeof EventsRoute
+  ExploreRoute: typeof ExploreRoute
   GroupsRoute: typeof GroupsRoute
   LoginRoute: typeof LoginRoute
   MarketplaceRoute: typeof MarketplaceRoute
@@ -194,6 +207,13 @@ declare module '@tanstack/react-router' {
       path: '/events'
       fullPath: '/events'
       preLoaderRoute: typeof EventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/explore': {
+      id: '/explore'
+      path: '/explore'
+      fullPath: '/explore'
+      preLoaderRoute: typeof ExploreRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/groups': {
@@ -259,6 +279,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CreateRoute: CreateRoute,
   EventsRoute: EventsRoute,
+  ExploreRoute: ExploreRoute,
   GroupsRoute: GroupsRoute,
   LoginRoute: LoginRoute,
   MarketplaceRoute: MarketplaceRoute,

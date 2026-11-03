@@ -19,3 +19,4 @@
 - Reels use private video/audio buckets and owner/friend-aware policies; sound resolution follows accessible Reel references with cycle protection, and only authors can update sound columns. Why: preserve privacy while supporting uploads and reusable sounds without an external music catalogue.
 - LanguageProvider wraps the shared app shell; navigation, feed and community-page strings use the shared dictionary so a language choice survives navigation and refresh.
 - Community pages share member-scoped data hooks; group roles stay in group_members and database policies enforce joining and posting permissions independently of the UI.
+- Explore reuses member-scoped StoreProvider posts and friendship controls; suggestions exclude self and existing requests/friends without claiming mutual connections. Why: discovery must not expose private content or invent relationship data.

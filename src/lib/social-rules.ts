@@ -12,6 +12,11 @@ export function canViewContent(viewer: string | null, owner: string, isPrivate: 
 export function pendingRequests(friendships: Friendship[], viewer: string) {
   return friendships.filter((f) => f.receiver_id === viewer && f.status === "pending");
 }
+export function suggestedPeople<T extends { id: string; name: string; username: string }>(users: T[], viewer: string | null, friendships: Friendship[]) {
+  if (!viewer) return [];
+  return users.filter((user) => friendshipState(friendships, viewer, user.id) === "none")
+    .sort((a, b) => a.name.localeCompare(b.name) || a.username.localeCompare(b.username));
+}
 export function profileViewState(ready: boolean, signedIn: boolean, profileExists: boolean) {
   if (!ready) return "loading";
   if (!signedIn) return "join";
