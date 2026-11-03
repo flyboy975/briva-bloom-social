@@ -1,4 +1,5 @@
 # Briva roadmap
+- [ ] Add people you may know and member-only Explore with search and existing friendship controls
 - [ ] Extend Reels to 10 minutes, enable audible swipe playback, and add uploaded/reusable sounds with owner sound editing
 - [x] Finalize navigation and language picker; restore shared feed, avatars and notification controls
 - [x] Finish community-page translations and verify group approval/decline, Reels sound/swiping, signed-out privacy and test-data cleanup

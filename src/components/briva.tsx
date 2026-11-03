@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Home, PlusSquare, UserRound, Clapperboard, UserPlus, Send, Users, Store, CalendarDays, Heart, MessageCircle, Languages } from "lucide-react";
+import { Compass, Home, PlusSquare, UserRound, Clapperboard, UserPlus, Send, Users, Store, CalendarDays, Heart, MessageCircle, Languages } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useStore, timeAgo, type User, type Post } from "@/lib/store";
 import { useMessaging } from "@/lib/messaging";
@@ -37,6 +37,7 @@ export function Shell({ children, title, wide }: { children: ReactNode; title?: 
       <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-1 px-3 py-2">
         <Link to="/" className="shrink-0 text-2xl font-extrabold text-primary">briva</Link>
         <div className="flex min-w-0 items-center gap-0.5">
+          <Link to="/explore" aria-label={t("explore")} title={t("explore")} className={iconLink} activeProps={{ className: `${iconLink} text-primary` }}><Compass size={20} /></Link>
           <Link to="/groups" aria-label={t("groups")} title={t("groups")} className={iconLink} activeProps={{ className: `${iconLink} text-primary` }}><Users size={20} /></Link>
           <Link to="/marketplace" aria-label={t("market")} title={t("market")} className={iconLink} activeProps={{ className: `${iconLink} text-primary` }}><Store size={20} /></Link>
           <Link to="/events" aria-label={t("events")} title={t("events")} className={iconLink} activeProps={{ className: `${iconLink} text-primary` }}><CalendarDays size={20} /></Link>
