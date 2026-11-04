@@ -1,7 +1,7 @@
 # Briva roadmap
 - [x] Add and verify saved active status switch and member online indicators
 - [x] Verify Settings on phone and desktop
-- [ ] Publish Settings and active status changes
+- [x] Request publishing of verified Settings and active status changes; deployment completion not yet confirmed
 - [x] Add people you may know and member-only Explore with search and existing friendship controls; verified signed-in phone/desktop and signed-out privacy
 - [ ] Extend Reels to 10 minutes, enable audible swipe playback, and add uploaded/reusable sounds with owner sound editing
 - [x] Finalize navigation and language picker; restore shared feed, avatars and notification controls
