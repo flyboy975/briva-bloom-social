@@ -291,6 +291,32 @@ export type Database = {
         }
         Relationships: []
       }
+      member_activity: {
+        Row: {
+          enabled: boolean
+          last_seen_at: string | null
+          user_id: string
+        }
+        Insert: {
+          enabled?: boolean
+          last_seen_at?: string | null
+          user_id: string
+        }
+        Update: {
+          enabled?: boolean
+          last_seen_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_activity_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           conversation_id: string
@@ -605,6 +631,10 @@ export type Database = {
       is_participant: {
         Args: { _conv: string; _user: string }
         Returns: boolean
+      }
+      record_member_activity: {
+        Args: { is_active: boolean }
+        Returns: undefined
       }
       valid_reel_sound: {
         Args: { _source: string; _target: string }

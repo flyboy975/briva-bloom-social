@@ -20,3 +20,4 @@
 - LanguageProvider wraps the shared app shell; navigation, feed and community-page strings use the shared dictionary so a language choice survives navigation and refresh.
 - Community pages share member-scoped data hooks; group roles stay in group_members and database policies enforce joining and posting permissions independently of the UI.
 - Explore reuses member-scoped StoreProvider posts and friendship controls; suggestions exclude self and existing requests/friends without claiming mutual connections. Why: discovery must not expose private content or invent relationship data.
+- Active status uses member-scoped activity rows and server-timestamped visible-tab heartbeats, exposed through StoreProvider; disabling clears timestamps and signed-out users cannot read activity. Why: online indicators must respect saved visibility without trusting client timestamps.

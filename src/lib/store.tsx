@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { canViewContent, imageError, type Friendship } from "@/lib/social-rules";
+import { useMemberActivity } from "@/lib/activity";
 
 export type User = { id: string; username: string; name: string; bio: string; avatarColor: string; avatarUrl?: string | undefined; isPrivate: boolean };
 export type Story = { id: string; userId: string; image: string; createdAt: number; expiresAt: number };
@@ -32,6 +33,9 @@ type Ctx = {
   friendships: Friendship[];
   friendAction: (otherId: string, action: "request" | "accept" | "remove") => Promise<string | null>;
   setPrivate: (privateProfile: boolean) => Promise<string | null>;
+  activeStatus: boolean;
+  activeUserIds: string[];
+  setActiveStatus: (enabled: boolean) => Promise<string | null>;
 };
 
 const StoreCtx = createContext<Ctx | null>(null);
@@ -44,6 +48,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [meId, setMeId] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
   const [friendships, setFriendships] = useState<Friendship[]>([]);
+  const activity = useMemberActivity(meId);
 
   const load = useCallback(async () => {
     const [pr, po, li, co, st, fr] = await Promise.all([
@@ -101,6 +106,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const visible = (id: string) => { const owner = users.find((u) => u.id === id); return Boolean(owner && canViewContent(meId, id, owner.isPrivate, friendships)); };
 
   const value: Ctx = {
+    ...activity,
     users, posts: posts.filter((p) => { const author = users.find((u) => u.username === p.author); return author ? visible(author.id) : false; }), stories: stories.filter((s) => visible(s.userId)), me, ready, friendships,
     setPrivate: async (is_private) => {
       if (!me) return "Please log in";
