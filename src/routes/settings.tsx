@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useRef, useState } from "react";
-import { Camera, Lock, LogOut } from "lucide-react";
+import { Camera, Lock, LogOut, Radio } from "lucide-react";
 import { Avatar, Shell } from "@/components/briva";
 import { useStore } from "@/lib/store";
 import { useLanguage, LANGS } from "@/lib/i18n";
@@ -23,7 +23,7 @@ export const Route = createFileRoute("/settings")({
 });
 
 function SettingsPage() {
-  const { me, ready, logout, setAvatar, setPrivate } = useStore();
+  const { me, ready, logout, setAvatar, setPrivate, activeStatus, setActiveStatus } = useStore();
   const { lang, setLang, t } = useLanguage();
   const nav = useNavigate();
   const fileRef = useRef<HTMLInputElement>(null);
@@ -71,6 +71,14 @@ function SettingsPage() {
           }} />
         </div>
         <p className="px-4 pb-2 text-xs text-muted-foreground">{t("privateProfileHint")}</p>
+        <div className="flex items-center justify-between gap-3 px-4 py-3">
+          <label htmlFor="settings-active" className="flex items-center gap-3 text-sm font-semibold"><Radio size={20} className="text-primary" />{t("activeStatus")}</label>
+          <Switch id="settings-active" checked={activeStatus} disabled={busy} onCheckedChange={async (value) => {
+            setBusy(true); setErr("");
+            try { if (await setActiveStatus(value)) setErr(t("activeStatusError")); }
+            catch { setErr(t("activeStatusError")); } finally { setBusy(false); }
+          }} />
+        </div>
       </section>
 
       <section aria-label={t("language")} className="border-b bg-card py-2">

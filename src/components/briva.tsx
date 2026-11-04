@@ -12,8 +12,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 export function Avatar({ user, size = 40 }: { user?: User | undefined; size?: number }) {
   const [failed, setFailed] = useState<string | undefined>();
-  return <span style={{ width: size, height: size }} className="inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent font-bold text-primary">
+  const { me, activeUserIds } = useStore();
+  const { t } = useLanguage();
+  const online = Boolean(me && user && activeUserIds.includes(user.id));
+  return <span className="relative inline-flex shrink-0">
+    <span style={{ width: size, height: size }} className="inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent font-bold text-primary">
     {user?.avatarUrl && failed !== user.avatarUrl ? <img src={user.avatarUrl} alt={user.name} className="h-full w-full object-cover" onError={() => setFailed(user.avatarUrl)} /> : (user?.name?.[0] ?? "B").toUpperCase()}
+    </span>
+    {online && <span role="status" aria-label={t("activeNow")} title={t("activeNow")} className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-card bg-online" />}
   </span>;
 }
 

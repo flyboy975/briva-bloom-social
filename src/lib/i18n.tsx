@@ -9,6 +9,7 @@ export const LANGS: { id: Lang; label: string }[] = [
 
 const dict = {
   en: {
+    activeStatus: "Active status", activeNow: "Active now", activeStatusError: "Could not save active status. Try again.",
     explore: "Explore", peopleYouMayKnow: "People you may know", people: "People", searchExplore: "Search people or posts", noPeople: "No new people to suggest yet", noResults: "No results found", seeAll: "See all",
     loading: "Loading…",
     members: "members",
@@ -71,6 +72,7 @@ const dict = {
     settings: "Settings", account: "Account", changePhoto: "Change photo", uploading: "Uploading…", privateProfile: "Private profile", privateProfileHint: "Only accepted friends can see your posts and stories.", logOut: "Log out",
   },
   sw: {
+    activeStatus: "Hali ya mtandaoni", activeNow: "Yuko mtandaoni", activeStatusError: "Imeshindikana kuhifadhi hali ya mtandaoni. Jaribu tena.",
     explore: "Gundua", peopleYouMayKnow: "Watu unaoweza kuwajua", people: "Watu", searchExplore: "Tafuta watu au machapisho", noPeople: "Hakuna watu wapya wa kupendekeza bado", noResults: "Hakuna matokeo", seeAll: "Ona wote",
     loading: "Inapakia…",
     members: "wanachama",
@@ -133,6 +135,7 @@ const dict = {
     settings: "Mipangilio", account: "Akaunti", changePhoto: "Badilisha picha", uploading: "Inapakia…", privateProfile: "Wasifu wa faragha", privateProfileHint: "Ni marafiki ulio kubali tu wanaoweza kuona machapisho na hadithi zako.", logOut: "Toka",
   },
   sheng: {
+    activeStatus: "Active status", activeNow: "Ako online", activeStatusError: "Active status haijasave. Jaribu tena.",
     explore: "Explore", peopleYouMayKnow: "Watu unaweza jua", people: "Watu", searchExplore: "Search watu ama posts", noPeople: "Hakuna watu wapya bado", noResults: "Hakuna results", seeAll: "Ona wote",
     loading: "Inaload…",
     members: "members",
