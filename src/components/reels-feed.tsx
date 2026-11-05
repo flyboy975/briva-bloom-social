@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Heart, MessageCircle, Music2, Pause, Play, Share2 } from "lucide-react";
+import { Heart, Maximize, MessageCircle, Music2, Play, Share2, Volume2, VolumeX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Avatar } from "@/components/briva";
@@ -21,6 +21,9 @@ function ReelPlayer({ reel, reels, onReload, onLike, onComment, onShare }: { ree
   const [paused, setPaused] = useState(false);
   const [visible, setVisible] = useState(false);
   const [failed, setFailed] = useState(false);
+  const [muted, setMuted] = useState(false);
+  const [time, setTime] = useState({ now: 0, total: reel.duration_seconds ?? 0 });
+  const fmt = (n: number) => `${Math.floor(n / 60)}:${String(Math.floor(n % 60)).padStart(2, "0")}`;
   const active = visible && !paused;
   useEffect(() => { if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) setPaused(true); }, []);
   useEffect(() => {
@@ -41,17 +44,19 @@ function ReelPlayer({ reel, reels, onReload, onLike, onComment, onShare }: { ree
   }, [active, resolved?.url]);
   const liked = Boolean(me && reel.likes.includes(me.id));
   return <article ref={section} id={`reel-${reel.id}`} className="reel-slide relative isolate snap-start snap-always overflow-hidden bg-story-background text-story-foreground" aria-label={`Reel by ${author?.username ?? "member"}`}>
-    <video ref={video} src={reel.url} muted={Boolean(sound)} loop playsInline preload="metadata" className="absolute inset-0 h-full w-full object-contain" onError={() => setFailed(true)} onTimeUpdate={() => { const track = audio.current; const clip = video.current; if (track && clip && Number.isFinite(track.duration) && track.duration > 0 && Math.abs(track.currentTime - clip.currentTime % track.duration) > 0.5) track.currentTime = clip.currentTime % track.duration; }} />
-    {sound && <audio ref={audio} src={sound.url} loop preload="metadata" onError={() => setFailed(true)} />}
+    <video ref={video} src={reel.url} muted={muted || Boolean(sound)} loop playsInline preload="metadata" className="absolute inset-0 h-full w-full object-contain" onClick={() => setPaused(!paused)} onError={() => setFailed(true)} onTimeUpdate={() => { if (video.current) setTime({ now: video.current.currentTime, total: video.current.duration || reel.duration_seconds || 0 }); const track = audio.current; const clip = video.current; if (track && clip && Number.isFinite(track.duration) && track.duration > 0 && Math.abs(track.currentTime - clip.currentTime % track.duration) > 0.5) track.currentTime = clip.currentTime % track.duration; }} />
+    {sound && <audio ref={audio} src={sound.url} muted={muted} loop preload="metadata" onError={() => setFailed(true)} />}
     <div className="reel-shade pointer-events-none absolute inset-0" />
-    <div className="absolute left-3 top-3 flex gap-2"><Button variant="ghost" size="icon" className="bg-story-background/60 text-story-foreground" aria-label={paused ? "Play video" : "Pause video"} onClick={() => { if (paused) { void video.current?.play().catch(() => setPaused(true)); void audio.current?.play().catch(() => setPaused(true)); } setPaused(!paused); }}>{paused ? <Play /> : <Pause />}</Button>{me?.id === reel.author_id && <ReelSoundEdit reel={reel} reels={reels} onDone={onReload} />}</div>
+    {paused && <button aria-label="Play video" onClick={() => setPaused(false)} className="absolute left-1/2 top-1/2 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-story-foreground/20 backdrop-blur"><Play size={30} /></button>}
+    <div className="absolute left-3 top-3 flex gap-2"><Button variant="ghost" size="icon" className="bg-story-background/60 text-story-foreground" aria-label="Full screen" onClick={() => void section.current?.requestFullscreen?.().catch(() => {})}><Maximize /></Button>{me?.id === reel.author_id && <ReelSoundEdit reel={reel} reels={reels} onDone={onReload} />}</div>
     {failed && <p role="alert" className="absolute inset-x-4 top-1/2 text-center">Video could not play. Try an MP4 upload.</p>}
     <div className="absolute bottom-5 right-2 flex w-14 flex-col items-center gap-4">
       <div className="text-center"><Button variant="ghost" size="icon" className="bg-story-background/60 text-story-foreground" aria-label={liked ? "Unlike Reel" : "Like Reel"} aria-pressed={liked} onClick={onLike}><Heart fill={liked ? "currentColor" : "none"} /></Button><span className="block text-xs font-semibold" aria-label="Reel likes">{reel.likes.length}</span></div>
       <div className="text-center"><Button variant="ghost" size="icon" className="bg-story-background/60 text-story-foreground" aria-label="Reel comments" onClick={onComment}><MessageCircle /></Button><span className="block text-xs font-semibold">{reel.comments.length}</span></div>
       <Button variant="ghost" size="icon" className="bg-story-background/60 text-story-foreground" aria-label="Share Reel" onClick={onShare}><Share2 /></Button>
+      <Button variant="ghost" size="icon" className="bg-story-background/60 text-story-foreground" aria-label={muted ? "Unmute" : "Mute"} onClick={() => setMuted(!muted)}>{muted ? <VolumeX /> : <Volume2 />}</Button>
     </div>
-    <div className="absolute bottom-5 left-4 right-20 space-y-3"><Link to="/u/$username" params={{ username: author?.username ?? "unknown" }} className="flex items-center gap-2 font-semibold"><Avatar user={author} size={32} /><span className="truncate">@{author?.username ?? "member"}</span></Link>{reel.caption && <p className="line-clamp-3 break-words text-sm">{reel.caption}</p>}<p className="flex items-center gap-2 text-xs"><Music2 size={14} /><span className="truncate">{resolved?.name ?? "Sound unavailable · video audio"}</span></p></div>
+    <div className="absolute bottom-5 left-4 right-20 space-y-3"><Link to="/u/$username" params={{ username: author?.username ?? "unknown" }} className="flex items-center gap-2 font-semibold"><Avatar user={author} size={32} /><span className="truncate">@{author?.username ?? "member"}</span></Link>{reel.caption && <p className="line-clamp-3 break-words text-sm">{reel.caption}</p>}<p className="flex items-center gap-2 text-xs"><Music2 size={14} /><span className="truncate">{resolved?.name ?? "Sound unavailable · video audio"}</span></p><p className="text-xs opacity-80">{fmt(time.now)} / {fmt(time.total)}</p><div className="h-1 w-full rounded bg-story-foreground/30"><div className="h-full rounded bg-story-foreground" style={{ width: `${time.total ? Math.min(100, (time.now / time.total) * 100) : 0}%` }} /></div></div>
   </article>;
 }
 
