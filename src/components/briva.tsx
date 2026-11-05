@@ -1,14 +1,13 @@
 import { Link } from "@tanstack/react-router";
-import { Compass, Home, PlusSquare, UserRound, Clapperboard, UserPlus, Send, Users, Store, CalendarDays, Heart, MessageCircle, Languages, Settings } from "lucide-react";
+import { Compass, Home, PlusSquare, UserRound, Clapperboard, UserPlus, Send, Users, Store, CalendarDays, Heart, MessageCircle, Settings } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useStore, timeAgo, type User, type Post } from "@/lib/store";
 import { useMessaging } from "@/lib/messaging";
-import { useLanguage, LANGS } from "@/lib/i18n";
+import { useLanguage } from "@/lib/i18n";
 import { pendingRequests, suggestedPeople } from "@/lib/social-rules";
 import { FriendshipActions } from "@/components/friendship-actions";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export function Avatar({ user, size = 40 }: { user?: User | undefined; size?: number }) {
   const [failed, setFailed] = useState<string | undefined>();
@@ -31,7 +30,7 @@ export const btnCls = "w-full rounded-lg bg-primary px-4 py-3 font-semibold text
 export function Shell({ children, title, wide }: { children: ReactNode; title?: string; wide?: boolean }) {
   const { me, users, friendships } = useStore();
   const { unread } = useMessaging();
-  const { lang, setLang, t } = useLanguage();
+  const { t } = useLanguage();
   const requests = me ? pendingRequests(friendships, me.id) : [];
   const friends = me ? friendships.filter((f) => f.status === "accepted" && (f.requester_id === me.id || f.receiver_id === me.id)).map((f) => users.find((u) => u.id === (f.requester_id === me.id ? f.receiver_id : f.requester_id))).filter((u): u is NonNullable<typeof u> => Boolean(u)) : [];
   const [query, setQuery] = useState("");
@@ -48,10 +47,6 @@ export function Shell({ children, title, wide }: { children: ReactNode; title?: 
           <Link to="/groups" aria-label={t("groups")} title={t("groups")} className={iconLink} activeProps={{ className: `${iconLink} text-primary` }}><Users size={20} /></Link>
           <Link to="/marketplace" aria-label={t("market")} title={t("market")} className={iconLink} activeProps={{ className: `${iconLink} text-primary` }}><Store size={20} /></Link>
           <Link to="/events" aria-label={t("events")} title={t("events")} className={iconLink} activeProps={{ className: `${iconLink} text-primary` }}><CalendarDays size={20} /></Link>
-          <Select value={lang} onValueChange={(value) => { if (value === "en" || value === "sw" || value === "sheng") setLang(value); }}>
-            <SelectTrigger aria-label={t("language")} className="h-9 w-auto shrink-0 gap-1 px-2"><Languages size={16} /></SelectTrigger>
-            <SelectContent>{LANGS.map((l) => <SelectItem key={l.id} value={l.id}>{l.label}</SelectItem>)}</SelectContent>
-          </Select>
           {me && <Link to="/settings" aria-label={t("settings")} title={t("settings")} className={iconLink} activeProps={{ className: `${iconLink} text-primary` }}><Settings size={20} /></Link>}
           {me && <Popover><PopoverTrigger asChild><Button variant="ghost" size="icon" aria-label={t("friends")} title={t("friends")} className="relative h-9 w-9 shrink-0"><UserPlus size={20} />{requests.length > 0 && <span className="absolute -right-0.5 -top-0.5 rounded-full bg-destructive px-1 text-[10px] text-destructive-foreground">{requests.length}</span>}</Button></PopoverTrigger>
             <PopoverContent align="end" className="max-h-[75dvh] w-80 max-w-[calc(100vw-1.5rem)] overflow-y-auto">

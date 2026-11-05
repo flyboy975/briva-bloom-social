@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useRef, useState } from "react";
-import { Camera, Lock, LogOut, Radio } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Camera, Lock, LogOut, Radio, Sun, Moon } from "lucide-react";
 import { Avatar, Shell } from "@/components/briva";
 import { useStore } from "@/lib/store";
 import { useLanguage, LANGS } from "@/lib/i18n";
@@ -29,6 +29,9 @@ function SettingsPage() {
   const fileRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+  useEffect(() => { setTheme(document.documentElement.classList.contains("dark") ? "dark" : "light"); }, []);
+  const pickTheme = (v: "light" | "dark") => { setTheme(v); document.documentElement.classList.toggle("dark", v === "dark"); localStorage.setItem("briva-theme", v); };
 
   if (!ready) return <Shell title={t("settings")}><p className="p-6 text-center text-muted-foreground">{t("loading")}</p></Shell>;
   if (!me) return (
@@ -88,6 +91,14 @@ function SettingsPage() {
             <SelectTrigger aria-label={t("language")} className="w-full"><SelectValue /></SelectTrigger>
             <SelectContent>{LANGS.map((l) => <SelectItem key={l.id} value={l.id}>{l.label}</SelectItem>)}</SelectContent>
           </Select>
+        </div>
+      </section>
+
+      <section aria-label="Theme" className="border-b bg-card py-2">
+        <h2 className="px-4 pb-1 pt-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{lang === "en" ? "Appearance" : lang === "sw" ? "Mwonekano" : "Look"}</h2>
+        <div className="grid grid-cols-2 gap-2 px-4 py-2">
+          <Button variant={theme === "light" ? "default" : "outline"} aria-pressed={theme === "light"} onClick={() => pickTheme("light")} className="gap-2"><Sun size={18} />{lang === "sw" ? "Mwanga" : "Light"}</Button>
+          <Button variant={theme === "dark" ? "default" : "outline"} aria-pressed={theme === "dark"} onClick={() => pickTheme("dark")} className="gap-2"><Moon size={18} />{lang === "sw" ? "Giza" : "Dark"}</Button>
         </div>
       </section>
 
