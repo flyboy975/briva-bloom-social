@@ -37,17 +37,12 @@ export function Shell({ children, title, wide }: { children: ReactNode; title?: 
   const q = query.trim().toLowerCase();
   const found = me && q ? users.filter((u) => u.id !== me.id && (u.name.toLowerCase().includes(q) || u.username.toLowerCase().includes(q))).slice(0, 8) : [];
   const suggestions = suggestedPeople(users, me?.id ?? null, friendships).slice(0, 8);
-  const iconLink = "relative flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground";
+  const iconLink = "relative flex h-11 w-full min-w-0 items-center justify-center rounded-md text-muted-foreground";
   return <div className="flex min-h-dvh w-full max-w-full flex-col overflow-x-hidden bg-background">
     <header className="sticky top-0 z-20 border-b bg-card pt-[env(safe-area-inset-top)]">
       <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-1 px-3 py-2">
         <Link to="/" className="shrink-0 text-2xl font-extrabold text-primary">briva</Link>
         <div className="flex min-w-0 items-center gap-0.5">
-          <Link to="/explore" aria-label={t("explore")} title={t("explore")} className={iconLink} activeProps={{ className: `${iconLink} text-primary` }}><Compass size={20} /></Link>
-          <Link to="/groups" aria-label={t("groups")} title={t("groups")} className={iconLink} activeProps={{ className: `${iconLink} text-primary` }}><Users size={20} /></Link>
-          <Link to="/marketplace" aria-label={t("market")} title={t("market")} className={iconLink} activeProps={{ className: `${iconLink} text-primary` }}><Store size={20} /></Link>
-          <Link to="/events" aria-label={t("events")} title={t("events")} className={iconLink} activeProps={{ className: `${iconLink} text-primary` }}><CalendarDays size={20} /></Link>
-          {me && <Link to="/settings" aria-label={t("settings")} title={t("settings")} className={iconLink} activeProps={{ className: `${iconLink} text-primary` }}><Settings size={20} /></Link>}
           {me && <Popover><PopoverTrigger asChild><Button variant="ghost" size="icon" aria-label={t("friends")} title={t("friends")} className="relative h-9 w-9 shrink-0"><UserPlus size={20} />{requests.length > 0 && <span className="absolute -right-0.5 -top-0.5 rounded-full bg-destructive px-1 text-[10px] text-destructive-foreground">{requests.length}</span>}</Button></PopoverTrigger>
             <PopoverContent align="end" className="max-h-[75dvh] w-80 max-w-[calc(100vw-1.5rem)] overflow-y-auto">
               <h2 className="mb-2 font-semibold">Find people</h2>
@@ -60,6 +55,14 @@ export function Shell({ children, title, wide }: { children: ReactNode; title?: 
           </Popover>}
         </div>
       </div>
+      <nav aria-label="Page navigation" className="mx-auto grid w-full max-w-5xl grid-cols-6 gap-1 border-t px-2">
+        <Button asChild variant="ghost" className={iconLink}><Link to="/" aria-label={t("home")} title={t("home")} activeOptions={{ exact: true }} activeProps={{ className: `${iconLink} text-primary` }}><Home size={20} /></Link></Button>
+        <Button asChild variant="ghost" className={iconLink}><Link to="/marketplace" aria-label={t("market")} title={t("market")} activeProps={{ className: `${iconLink} text-primary` }}><Store size={20} /></Link></Button>
+        <Button asChild variant="ghost" className={iconLink}><Link to="/settings" aria-label={t("settings")} title={t("settings")} activeProps={{ className: `${iconLink} text-primary` }}><Settings size={20} /></Link></Button>
+        <Button asChild variant="ghost" className={iconLink}><Link to="/groups" aria-label={t("groups")} title={t("groups")} activeProps={{ className: `${iconLink} text-primary` }}><Users size={20} /></Link></Button>
+        <Button asChild variant="ghost" className={iconLink}><Link to="/events" aria-label={t("events")} title={t("events")} activeProps={{ className: `${iconLink} text-primary` }}><CalendarDays size={20} /></Link></Button>
+        <Button asChild variant="ghost" className={iconLink}><Link to="/explore" aria-label={t("explore")} title={t("explore")} activeProps={{ className: `${iconLink} text-primary` }}><Compass size={20} /></Link></Button>
+      </nav>
     </header>
     <main aria-label={title} className={wide ? "w-full min-w-0 flex-1" : "mx-auto w-full min-w-0 max-w-[600px] flex-1"}>{children}</main>
     <nav aria-label="Main navigation" className="sticky bottom-0 z-20 flex border-t bg-card px-1 pt-2 pb-[max(8px,env(safe-area-inset-bottom))]">
