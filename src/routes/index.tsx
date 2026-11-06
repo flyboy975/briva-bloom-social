@@ -27,13 +27,13 @@ function Feed() {
   return (
     <Shell>
       {view === "reels" ? <ReelsFeed target={reel} /> : <>
-      <StoriesBar />
       <Link to={me ? "/create" : "/login"} className="flex items-center gap-3 border-b bg-card px-4 py-3">
         <Avatar user={me ?? undefined} size={36} />
         <span className="flex-1 rounded-full bg-secondary px-4 py-2 text-sm text-muted-foreground">
           {me ? `${t("feedPrompt")}, ${me.name.split(" ")[0]}?` : t("feedJoin")}
         </span>
       </Link>
+      <StoriesBar />
       {!ready && <p className="p-6 text-center text-sm text-muted-foreground">{t("loadingPosts")}</p>}
       {ready && !me && (
         <div className="p-6 text-center">
