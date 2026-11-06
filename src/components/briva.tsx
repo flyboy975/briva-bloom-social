@@ -42,8 +42,11 @@ export function Shell({ children, title, wide }: { children: ReactNode; title?: 
     <header className="sticky top-0 z-20 border-b bg-card pt-[env(safe-area-inset-top)]">
       <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-1 px-3 py-2">
         <Link to="/" className="shrink-0 text-2xl font-extrabold text-primary">briva</Link>
-        <div className="flex min-w-0 items-center gap-0.5">
-          {me && <Popover><PopoverTrigger asChild><Button variant="ghost" size="icon" aria-label={t("friends")} title={t("friends")} className="relative h-9 w-9 shrink-0"><UserPlus size={20} />{requests.length > 0 && <span className="absolute -right-0.5 -top-0.5 rounded-full bg-destructive px-1 text-[10px] text-destructive-foreground">{requests.length}</span>}</Button></PopoverTrigger>
+
+      </div>
+      <nav aria-label="Page navigation" className="mx-auto grid w-full max-w-5xl grid-cols-7 gap-1 border-t px-2">
+        <Button asChild variant="ghost" className={iconLink}><Link to="/" aria-label={t("home")} title={t("home")} activeOptions={{ exact: true }} activeProps={{ className: `${iconLink} text-primary` }}><Home size={20} /></Link></Button>
+          {me && <Popover><PopoverTrigger asChild><Button variant="ghost" size="icon" aria-label={t("friends")} title={t("friends")} className={iconLink}><UserPlus size={20} />{requests.length > 0 && <span className="absolute right-1 top-0.5 rounded-full bg-destructive px-1 text-[10px] text-destructive-foreground">{requests.length}</span>}</Button></PopoverTrigger>
             <PopoverContent align="end" className="max-h-[75dvh] w-80 max-w-[calc(100vw-1.5rem)] overflow-y-auto">
               <h2 className="mb-2 font-semibold">Find people</h2>
               <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search by name" className={inputCls} />
@@ -53,14 +56,11 @@ export function Shell({ children, title, wide }: { children: ReactNode; title?: 
               <h2 className="mb-3 mt-4 border-t pt-3 font-semibold">{t("friendRequests")} ({requests.length})</h2>{!requests.length && <p className="text-sm text-muted-foreground">{t("noRequests")}</p>}{requests.map((r) => { const user = users.find((u) => u.id === r.requester_id); return <div key={r.id} className="space-y-2 border-t py-3"><div className="flex items-center gap-2"><Avatar user={user} size={32} />{user && <Link to="/u/$username" params={{ username: user.username }} className="truncate font-semibold">{user.name}</Link>}</div><FriendshipActions otherId={r.requester_id} /></div>; })}
               <h2 className="mb-3 mt-4 border-t pt-3 font-semibold">{t("friends")} ({friends.length})</h2>{!friends.length && <p className="text-sm text-muted-foreground">{t("noFriends")}</p>}{friends.map((user) => <Link key={user.id} to="/u/$username" params={{ username: user.username }} className="flex items-center gap-2 py-2"><Avatar user={user} size={32} /><span className="truncate font-semibold">{user.name}</span></Link>)}</PopoverContent>
           </Popover>}
-        </div>
-      </div>
-      <nav aria-label="Page navigation" className="mx-auto grid w-full max-w-5xl grid-cols-6 gap-1 border-t px-2">
-        <Button asChild variant="ghost" className={iconLink}><Link to="/" aria-label={t("home")} title={t("home")} activeOptions={{ exact: true }} activeProps={{ className: `${iconLink} text-primary` }}><Home size={20} /></Link></Button>
-        <Button asChild variant="ghost" className={iconLink}><Link to="/marketplace" aria-label={t("market")} title={t("market")} activeProps={{ className: `${iconLink} text-primary` }}><Store size={20} /></Link></Button>
-        <Button asChild variant="ghost" className={iconLink}><Link to="/settings" aria-label={t("settings")} title={t("settings")} activeProps={{ className: `${iconLink} text-primary` }}><Settings size={20} /></Link></Button>
+          {!me && <Button asChild variant="ghost" className={iconLink}><Link to="/login" aria-label={t("friends")} title={t("friends")}><UserPlus size={20} /></Link></Button>}
         <Button asChild variant="ghost" className={iconLink}><Link to="/groups" aria-label={t("groups")} title={t("groups")} activeProps={{ className: `${iconLink} text-primary` }}><Users size={20} /></Link></Button>
+        <Button asChild variant="ghost" className={iconLink}><Link to="/marketplace" aria-label={t("market")} title={t("market")} activeProps={{ className: `${iconLink} text-primary` }}><Store size={20} /></Link></Button>
         <Button asChild variant="ghost" className={iconLink}><Link to="/events" aria-label={t("events")} title={t("events")} activeProps={{ className: `${iconLink} text-primary` }}><CalendarDays size={20} /></Link></Button>
+        <Button asChild variant="ghost" className={iconLink}><Link to="/settings" aria-label={t("settings")} title={t("settings")} activeProps={{ className: `${iconLink} text-primary` }}><Settings size={20} /></Link></Button>
         <Button asChild variant="ghost" className={iconLink}><Link to="/explore" aria-label={t("explore")} title={t("explore")} activeProps={{ className: `${iconLink} text-primary` }}><Compass size={20} /></Link></Button>
       </nav>
     </header>
