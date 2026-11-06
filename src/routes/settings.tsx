@@ -6,6 +6,7 @@ import { useStore } from "@/lib/store";
 import { useLanguage, LANGS } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import { AccountControls } from "@/components/account-controls";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export const Route = createFileRoute("/settings")({
@@ -102,6 +103,7 @@ function SettingsPage() {
         </div>
       </section>
 
+      <AccountControls />
       {err && <p role="alert" className="px-4 py-3 text-sm text-destructive">{err}</p>}
 
       <div className="p-4">

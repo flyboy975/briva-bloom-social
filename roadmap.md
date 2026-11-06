@@ -1,4 +1,6 @@
 # Briva roadmap
+- [x] Add Add account and Switch account in Settings; verified phone/desktop forms, saved identity and failed-login safety
+- [ ] Verify successful switching between two accounts; needs a second account's authorized sign-in
 - [x] Add and verify saved active status switch and member online indicators
 - [x] Verify Settings on phone and desktop
 - [x] Request publishing of verified Settings and active status changes; deployment completion not yet confirmed
