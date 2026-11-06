@@ -8,7 +8,8 @@ import {
   Scripts,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -124,12 +125,24 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const [identity, setIdentity] = useState<string | null>(null);
   useEffect(() => { void registerServiceWorker(); }, []);
+  useEffect(() => {
+    let current: string | null = null;
+    const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+      const next = session?.user.id ?? null;
+      if (current === next) return;
+      current = next;
+      queryClient.clear();
+      setIdentity(next);
+    });
+    return () => data.subscription.unsubscribe();
+  }, [queryClient]);
 
   return (
     <QueryClientProvider client={queryClient}>
       <LanguageProvider>
-      <StoreProvider>
+      <StoreProvider key={identity ?? "signed-out"}>
         <MessagingProvider>
         <Outlet />
         <InstallPrompt />
