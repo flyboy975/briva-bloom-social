@@ -83,6 +83,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
+      { name: "google-site-verification", content: "QvUAwuJwXVpsgQYSQa73WcUsvShSqMUVoUkA6kKp5lE" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { title: "Briva" },
       { name: "description", content: "Briva — a friendly social network for everyone." },
