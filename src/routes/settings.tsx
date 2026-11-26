@@ -106,6 +106,7 @@ function SettingsPage() {
       <AccountControls />
       {err && <p role="alert" className="px-4 py-3 text-sm text-destructive">{err}</p>}
 
+      <p className="px-4 pt-3 text-center text-xs text-muted-foreground"><Link to="/privacy" className="underline">Privacy Policy</Link> · <Link to="/terms" className="underline">Terms of Service</Link></p>
       <div className="p-4">
         <Button variant="outline" className="w-full gap-2" onClick={async () => { await logout(); nav({ to: "/", replace: true }); }}>
           <LogOut size={18} />{t("logOut")}

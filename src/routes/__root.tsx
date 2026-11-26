@@ -18,6 +18,7 @@ import { registerServiceWorker } from "../lib/pwa";
 import { InstallPrompt } from "../components/install-prompt";
 import { MessagingProvider } from "@/lib/messaging";
 import { LanguageProvider } from "@/lib/i18n";
+import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -146,6 +147,7 @@ function RootComponent() {
       <StoreProvider key={identity ?? "signed-out"}>
         <MessagingProvider>
         <Outlet />
+        <Toaster position="top-center" />
         <InstallPrompt />
         </MessagingProvider>
       </StoreProvider>

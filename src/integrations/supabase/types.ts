@@ -53,6 +53,33 @@ export type Database = {
           },
         ]
       }
+      content_reports: {
+        Row: {
+          created_at: string
+          id: string
+          reason: string
+          reporter_id: string
+          target_id: string
+          target_type: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          reason: string
+          reporter_id: string
+          target_id: string
+          target_type: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          reason?: string
+          reporter_id?: string
+          target_id?: string
+          target_type?: string
+        }
+        Relationships: []
+      }
       conversations: {
         Row: {
           created_at: string
@@ -611,6 +638,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_blocks: {
+        Row: {
+          blocked_id: string
+          blocker_id: string
+          created_at: string
+        }
+        Insert: {
+          blocked_id: string
+          blocker_id: string
+          created_at?: string
+        }
+        Update: {
+          blocked_id?: string
+          blocker_id?: string
+          created_at?: string
+        }
+        Relationships: []
       }
     }
     Views: {

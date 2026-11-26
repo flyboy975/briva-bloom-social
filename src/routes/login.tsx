@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import "@lovable.dev/cloud-auth-js/styles.css";
 import { Shell, inputCls, btnCls } from "@/components/briva";
@@ -65,6 +65,7 @@ function Login() {
             <button type="button" onClick={() => oauth("google")} className="w-full rounded-xl border bg-card py-3 font-semibold">Continue with Google</button>
             <button type="button" className="lovable-auth-button w-full" onClick={() => oauth("lovable")}>Continue with Lovable</button>
       </form>
+      <p className="mt-4 text-center text-xs text-muted-foreground">By continuing you agree to our <Link to="/terms" className="underline">Terms</Link> and <Link to="/privacy" className="underline">Privacy Policy</Link>.</p>
     </Shell>
   );
 }

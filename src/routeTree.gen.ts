@@ -17,9 +17,11 @@ import { Route as GroupsRouteImport } from './routes/groups'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MarketplaceRouteImport } from './routes/marketplace'
 import { Route as MessagesRouteImport } from './routes/messages'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ReelsRouteImport } from './routes/reels'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as GroupsGroupIdRouteImport } from './routes/groups_.$groupId'
 import { Route as UUsernameRouteImport } from './routes/u.$username'
 
@@ -63,6 +65,11 @@ const MessagesRoute = MessagesRouteImport.update({
   path: '/messages',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ReelsRoute = ReelsRouteImport.update({
   id: '/reels',
   path: '/reels',
@@ -76,6 +83,11 @@ const SettingsRoute = SettingsRouteImport.update({
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GroupsGroupIdRoute = GroupsGroupIdRouteImport.update({
@@ -98,9 +110,11 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/marketplace': typeof MarketplaceRoute
   '/messages': typeof MessagesRoute
+  '/privacy': typeof PrivacyRoute
   '/reels': typeof ReelsRoute
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
+  '/terms': typeof TermsRoute
   '/groups/$groupId': typeof GroupsGroupIdRoute
   '/u/$username': typeof UUsernameRoute
 }
@@ -113,9 +127,11 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/marketplace': typeof MarketplaceRoute
   '/messages': typeof MessagesRoute
+  '/privacy': typeof PrivacyRoute
   '/reels': typeof ReelsRoute
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
+  '/terms': typeof TermsRoute
   '/groups/$groupId': typeof GroupsGroupIdRoute
   '/u/$username': typeof UUsernameRoute
 }
@@ -129,9 +145,11 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/marketplace': typeof MarketplaceRoute
   '/messages': typeof MessagesRoute
+  '/privacy': typeof PrivacyRoute
   '/reels': typeof ReelsRoute
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
+  '/terms': typeof TermsRoute
   '/groups_/$groupId': typeof GroupsGroupIdRoute
   '/u/$username': typeof UUsernameRoute
 }
@@ -146,9 +164,11 @@ export interface FileRouteTypes {
     | '/login'
     | '/marketplace'
     | '/messages'
+    | '/privacy'
     | '/reels'
     | '/settings'
     | '/signup'
+    | '/terms'
     | '/groups/$groupId'
     | '/u/$username'
   fileRoutesByTo: FileRoutesByTo
@@ -161,9 +181,11 @@ export interface FileRouteTypes {
     | '/login'
     | '/marketplace'
     | '/messages'
+    | '/privacy'
     | '/reels'
     | '/settings'
     | '/signup'
+    | '/terms'
     | '/groups/$groupId'
     | '/u/$username'
   id:
@@ -176,9 +198,11 @@ export interface FileRouteTypes {
     | '/login'
     | '/marketplace'
     | '/messages'
+    | '/privacy'
     | '/reels'
     | '/settings'
     | '/signup'
+    | '/terms'
     | '/groups_/$groupId'
     | '/u/$username'
   fileRoutesById: FileRoutesById
@@ -192,9 +216,11 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   MarketplaceRoute: typeof MarketplaceRoute
   MessagesRoute: typeof MessagesRoute
+  PrivacyRoute: typeof PrivacyRoute
   ReelsRoute: typeof ReelsRoute
   SettingsRoute: typeof SettingsRoute
   SignupRoute: typeof SignupRoute
+  TermsRoute: typeof TermsRoute
   GroupsGroupIdRoute: typeof GroupsGroupIdRoute
   UUsernameRoute: typeof UUsernameRoute
 }
@@ -257,6 +283,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MessagesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reels': {
       id: '/reels'
       path: '/reels'
@@ -276,6 +309,13 @@ declare module '@tanstack/react-router' {
       path: '/signup'
       fullPath: '/signup'
       preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/groups_/$groupId': {
@@ -304,9 +344,11 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   MarketplaceRoute: MarketplaceRoute,
   MessagesRoute: MessagesRoute,
+  PrivacyRoute: PrivacyRoute,
   ReelsRoute: ReelsRoute,
   SettingsRoute: SettingsRoute,
   SignupRoute: SignupRoute,
+  TermsRoute: TermsRoute,
   GroupsGroupIdRoute: GroupsGroupIdRoute,
   UUsernameRoute: UUsernameRoute,
 }

@@ -28,3 +28,5 @@
 - [x] Add secure friend requests and member-controlled profile privacy
 - [x] Add profile friendship controls and pending-request notifications
 - [x] Verify friend transitions and private posts/stories access
+- [x] Privacy Policy and Terms pages; Report post and Block member
+- [ ] Notifications, Saved, Polls, #hashtags/@mentions, WhatsApp/Call seller, Voice notes, Verified badges

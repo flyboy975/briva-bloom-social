@@ -7,6 +7,8 @@ import { useLanguage } from "@/lib/i18n";
 import { pendingRequests, suggestedPeople } from "@/lib/social-rules";
 import { FriendshipActions } from "@/components/friendship-actions";
 import { Button } from "@/components/ui/button";
+import { SafetyMenu } from "@/components/safety-menu";
+import { useBlocked } from "@/lib/safety";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 export function Avatar({ user, size = 40 }: { user?: User | undefined; size?: number }) {
@@ -82,10 +84,11 @@ export function PostCard({ post }: { post: Post }) {
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const author = users.find((u) => u.username === post.author);
-  if (!me) return null;
+  const blocked = useBlocked();
+  if (!me || (author && blocked.has(author.id))) return null;
   const liked = post.likes.includes(me.username);
   return <article className="border-b bg-card">
-    <div className="flex items-center gap-3 px-4 py-3"><Avatar user={author} /> <div className="min-w-0">{author && <Link to="/u/$username" params={{ username: author.username }} className="block truncate text-sm font-semibold">{author.name}</Link>}<p className="text-xs text-muted-foreground">@{post.author} · {timeAgo(post.createdAt)}</p></div></div>
+    <div className="flex items-center gap-3 px-4 py-3"><Avatar user={author} /> <div className="min-w-0">{author && <Link to="/u/$username" params={{ username: author.username }} className="block truncate text-sm font-semibold">{author.name}</Link>}<p className="text-xs text-muted-foreground">@{post.author} · {timeAgo(post.createdAt)}</p></div>{author && <SafetyMenu meId={me.id} authorId={author.id} postId={post.id} />}</div>
     {post.text && <p className="whitespace-pre-wrap break-words px-4 pb-3 text-sm">{post.text}</p>}
     {post.image && <img src={post.image} alt="Post photo" className="max-h-[600px] w-full object-contain" />}
     <div className="flex gap-3 px-3 py-2"><Button variant="ghost" size="sm" aria-pressed={liked} onClick={() => void toggleLike(post.id)} className={liked ? "text-primary" : "text-muted-foreground"}><Heart className={liked ? "fill-current" : ""} />{post.likes.length} {t("like")}</Button><Button variant="ghost" size="sm" aria-expanded={commentsOpen} onClick={() => setCommentsOpen(!commentsOpen)}><MessageCircle />{post.comments.length} {t("comment")}</Button></div>
