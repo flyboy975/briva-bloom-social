@@ -4,6 +4,7 @@ import { useStore } from "@/lib/store";
 import { StoriesBar } from "@/components/stories";
 import { ReelsFeed } from "@/components/reels-feed";
 import { useLanguage } from "@/lib/i18n";
+import { UserSearch, DiscoverPeople } from "@/components/user-search";
 
 export const Route = createFileRoute("/")({
   validateSearch: (search: Record<string, unknown>): { view?: "reels" | undefined; reel?: string | undefined } => ({ view: search['view'] === "reels" ? "reels" : undefined, reel: typeof search['reel'] === "string" ? search['reel'] : undefined }),
@@ -27,6 +28,7 @@ function Feed() {
   return (
     <Shell>
       {view === "reels" ? <ReelsFeed target={reel} /> : <>
+      <UserSearch />
       <Link to={me ? "/create" : "/login"} className="flex items-center gap-3 border-b bg-card px-4 py-3">
         <Avatar user={me ?? undefined} size={36} />
         <span className="flex-1 rounded-full bg-secondary px-4 py-2 text-sm text-muted-foreground">
@@ -41,7 +43,7 @@ function Feed() {
           <Link to="/login" className="mt-4 inline-flex rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground">{t("loginOrSignup")}</Link>
         </div>
       )}
-      {ready && me && !posts.length && <p className="p-6 text-center text-sm text-muted-foreground">{t("noPosts")}</p>}
+      {ready && me && !posts.length && <DiscoverPeople />}
       {posts.map((p) => <PostCard key={p.id} post={p} />)}
       </>}
     </Shell>
